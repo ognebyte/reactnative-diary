@@ -1,0 +1,39 @@
+{
+  "expo": {
+    "name": "Diary",
+    "slug": "diary",
+    "version": "0.3.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon_app.png",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "image": "./assets/splash_app.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "updates": {
+      "fallbackToCacheTimeout": 0
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive_icon_app.png",
+        "backgroundColor": "#FFFFFF"
+      },
+      "package": "com.vas.diary"
+    },
+    "web": {
+      "favicon": "./assets/icon_app_mini.png"
+    },
+    "ios": {
+      "supportsTablet": true
+    },
+    "extra": {
+      "eas": {
+        "projectId": "a331a3b6-b2ff-46a5-8a18-5789f2c1394c"
+      }
+    }
+  }
+}

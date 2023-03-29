@@ -1,0 +1,1 @@
+Figma design: https://www.figma.com/file/PFPW1fXVAduKu4LLku59aW/Diary?t=9oF05qbugzF4ZItp-1
