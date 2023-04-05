@@ -2,12 +2,12 @@ import React from 'react';
 import { CardStyleInterpolators, createStackNavigator } from "@react-navigation/stack";
 import { Easing } from 'react-native';
 
-import NavigationTheme from './style/navigation';
-import StylesTexts from './style/texts';
+import NavigationTheme from '../style/navigation';
+import StylesTexts from '../style/texts';
 
 import HomeScreen from './HomeScreen';
-import Notes from './Notes';
-import SubjectsStack from './Subjects'
+import Notes from '../Notes';
+import SubjectsStack from '../Subjects'
 
 const Stack = createStackNavigator();
 

@@ -73,28 +73,28 @@ const Setting = () => {
                 
                 {/* SELECT TABLE */}
                 <TouchableOpacity
-                    style={[StylesButtons.default, StylesButtons.buttonsDefault]}
+                    style={[StylesButtons.default, StylesButtons.buttonsDefault, {backgroundColor: '#000000'}]}
                     onPress={() => getTable(tableNotes)}
                 >
                     <Text style={[StylesTexts.default, StylesTexts.lightColor]}> Get table notes </Text>
                 </TouchableOpacity>
 
                 <TouchableOpacity
-                    style={[StylesButtons.default, StylesButtons.buttonsDefault]}
+                    style={[StylesButtons.default, StylesButtons.buttonsDefault, {backgroundColor: '#000000'}]}
                     onPress={() => getTable(tableSubjects)}
                 >
                     <Text style={[StylesTexts.default, StylesTexts.lightColor]}> Get table subjects </Text>
                 </TouchableOpacity>
 
                 <TouchableOpacity
-                    style={[StylesButtons.default, StylesButtons.buttonsDefault]}
+                    style={[StylesButtons.default, StylesButtons.buttonsDefault, {backgroundColor: '#000000'}]}
                     onPress={() => getTable(tableSubject)}
                 >
                     <Text style={[StylesTexts.default, StylesTexts.lightColor]}> Get table subject </Text>
                 </TouchableOpacity>
                 
                 <TouchableOpacity
-                    style={[StylesButtons.default, StylesButtons.buttonsDefault]}
+                    style={[StylesButtons.default, StylesButtons.buttonsDefault, {backgroundColor: '#000000'}]}
                     onPress={() => getTable(tableUsers)}
                 >
                     <Text style={[StylesTexts.default, StylesTexts.lightColor]}> Get table users </Text>
@@ -102,28 +102,28 @@ const Setting = () => {
 
                 {/* DROP TABLE */}
                 <TouchableOpacity
-                    style={[StylesButtons.default, StylesButtons.buttonsDefault]}
+                    style={[StylesButtons.default, StylesButtons.buttonsDefault, {backgroundColor: '#000000'}]}
                     onPress={() => setShowAlertDropTable(true)}
                 >
                     <Text style={[StylesTexts.default, StylesTexts.lightColor]}> Drop table notes </Text>
                 </TouchableOpacity>
 
                 <TouchableOpacity
-                    style={[StylesButtons.default, StylesButtons.buttonsDefault]}
+                    style={[StylesButtons.default, StylesButtons.buttonsDefault, {backgroundColor: '#000000'}]}
                     onPress={() => dropTable(tableSubjects)}
                 >
                     <Text style={[StylesTexts.default, StylesTexts.lightColor]}> Drop table subjects </Text>
                 </TouchableOpacity>
 
                 <TouchableOpacity
-                    style={[StylesButtons.default, StylesButtons.buttonsDefault]}
+                    style={[StylesButtons.default, StylesButtons.buttonsDefault, {backgroundColor: '#000000'}]}
                     onPress={() => dropTable(tableSubject)}
                 >
                     <Text style={[StylesTexts.default, StylesTexts.lightColor]}> Drop table subject </Text>
                 </TouchableOpacity>
 
                 <TouchableOpacity
-                    style={[StylesButtons.default, StylesButtons.buttonsDefault]}
+                    style={[StylesButtons.default, StylesButtons.buttonsDefault, {backgroundColor: '#000000'}]}
                     onPress={() => dropTable(tableUsers)}
                 >
                     <Text style={[StylesTexts.default, StylesTexts.lightColor]}> Drop table users </Text>

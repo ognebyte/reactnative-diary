@@ -4,7 +4,6 @@ export default StyleSheet.create({
     default: {
         justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: '#000000',
         borderRadius: 10,
     },
     buttonSquare: {

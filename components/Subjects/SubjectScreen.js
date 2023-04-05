@@ -17,6 +17,8 @@ const SubjectScreen = ({ route, navigation }) => {
     const db = SQLite.openDatabase(`${table}.db`)
     const subjectId = route.params.subjectId
     const createdBy = route.params.createdBy
+
+    const [load, setLoad] = useState(false)
     const screens = {
         index: 0,
         routes: [
@@ -45,11 +47,11 @@ const SubjectScreen = ({ route, navigation }) => {
             navigationState={screens}
             renderScene={SceneMap({
                 first: () => <Tasks subjectId={subjectId}/>,
-                second: () => <Report subjectId={subjectId} createdBy={createdBy}/>,
+                second: () => <Report subjectId={subjectId} createdBy={createdBy} load={load}/>,
             })}
             // third: () => <Users subjectId={subjectId} createdBy={createdBy}/>,
             initialLayout={{ width: Dimensions.get('window').width }}
-            onIndexChange={ index => screens.index = index}
+            onIndexChange={ index => {setLoad(!load); screens.index = index}}
             renderTabBar={ props => <TabBar {...props}
                 style={{
                     flexDirection: 'column',

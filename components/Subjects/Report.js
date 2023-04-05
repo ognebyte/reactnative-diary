@@ -27,7 +27,7 @@ const Report = (props) => {
     useEffect(
         () => {
             refresh()
-        }, []
+        }, [props.load]
     )
 
     const getAllSubjectTask = () => {

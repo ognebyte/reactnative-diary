@@ -7,10 +7,10 @@ import NavigationTheme from './style/navigation';
 import StylesContainers from './style/containers';
 import StylesTexts from './style/texts';
 
-import HomeStack from './HomeStack';
+import Home from './Home';
 import Setting from './Setting';
 import Profile from './Profile';
-import AgendaScreen from './CalendarScreen';
+import Calendar from './Calendar';
 
 import IconInbox from '../assets/svg/inbox';
 import IconHome from '../assets/svg/home';
@@ -89,7 +89,7 @@ const App = () => {
             >
 
                 <Tab.Screen name='Home'
-                    children={() => <HomeStack />}
+                    children={() => <Home />}
                 />
 
                 {/* <Tab.Screen name='Notification'
@@ -98,7 +98,7 @@ const App = () => {
                 /> */}
                 
                 <Tab.Screen name='Calendar' options={{title: 'Календарь'}}
-                    children={() => <AgendaScreen />}
+                    children={() => <Calendar />}
                 />
                 
                 <Tab.Screen name='Setting' options={{title: 'Настройки'}}
