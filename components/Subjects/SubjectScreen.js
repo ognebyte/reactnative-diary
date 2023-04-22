@@ -13,8 +13,8 @@ import Users from "./Users";
 
 
 const SubjectScreen = ({ route, navigation }) => {
+    const db = SQLite.openDatabase('diary.db')
     const table = 'subjects'
-    const db = SQLite.openDatabase(`${table}.db`)
     const subjectId = route.params.subjectId
     const createdBy = route.params.createdBy
 

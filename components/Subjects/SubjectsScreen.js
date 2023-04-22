@@ -16,8 +16,8 @@ import IconPlus from '../../assets/svg/plus'
 
 
 const SubjectsScreen = ({ navigation }) => {
+    const db = SQLite.openDatabase('diary.db')
     const table = 'subjects'
-    const db = SQLite.openDatabase(`${table}.db`)
     const screenPadding = StylesContainers.screen.padding
     const [subjects, setSubjects] = useState([])
     const [loading, setLoading] = useState(true)
@@ -49,8 +49,8 @@ const SubjectsScreen = ({ navigation }) => {
             let value = await AsyncStorage.getItem('auth')
             if (value !== null) {
                 setUser(value)
-                console.log(value);
-            } else console.log('user not auth')
+            }
+            // else console.log('user not auth')
         } catch (e) {
             alert('ERROR: getAuth');
         }
@@ -61,13 +61,7 @@ const SubjectsScreen = ({ navigation }) => {
         setSubjects([])
         db.transaction(tx =>
             tx.executeSql(`SELECT * FROM ${table} ORDER BY id DESC`, [],
-                (_, res) => {
-                    var rows = []
-                    for (let i = 0; i < res.rows.length; i++) {
-                        rows.push(res.rows.item(i))
-                    }
-                    setSubjects(rows)
-                },
+                (_, res) => setSubjects(res.rows._array),
                 (_, error) => console.log(error)
             )
         )
@@ -105,14 +99,7 @@ const SubjectsScreen = ({ navigation }) => {
             );
         })
         const dbChild = SQLite.openDatabase(`subject.db`)
-        dbChild.transaction(tx => {
-            tx.executeSql(`DELETE FROM subject WHERE subject_id = ?`, [id],
-                (_, res) => {
-                    if(res.rowsAffected > 0) console.log('deleted')
-                },
-                (_, error) => console.log(error)
-            )
-        })
+        dbChild.transaction(tx => {tx.executeSql(`DELETE FROM subject WHERE subject_id = ?`, [id])})
     }
     
     const saveInputs = (title) => {

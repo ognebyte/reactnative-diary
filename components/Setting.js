@@ -9,7 +9,7 @@ import StylesTexts from './style/texts';
 
 const Setting = () => {
     const [showAlertDropTable, setShowAlertDropTable] = useState(false)
-    
+    const db = SQLite.openDatabase('diary.db')
     const tableNotes = 'notes'
     const tableSubjects = 'subjects'
     const tableSubject = 'subject'
@@ -31,7 +31,6 @@ const Setting = () => {
     // )
 
     const getTable = (t) => {
-        var db = SQLite.openDatabase(`${t}.db`)
         db.transaction(tx =>
             tx.executeSql(`SELECT * FROM ${t} ORDER BY id`, [],
                 (_, res) => {
@@ -46,7 +45,6 @@ const Setting = () => {
     }
 
     const dropTable = (t) => {
-        var db = SQLite.openDatabase(`${t}.db`)
         db.transaction(tx =>
             tx.executeSql(`DROP TABLE ${t}`, [],
                 (_, res) => { alert(`${t} dropped`) }

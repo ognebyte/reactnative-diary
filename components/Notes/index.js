@@ -14,8 +14,8 @@ import ModalAdd from '../Modals/ModalAdd'
 import IconPlus from '../../assets/svg/plus'
 
 const Notes = () => {
+    const db = SQLite.openDatabase('diary.db')
     const table = 'notes'
-    const db = SQLite.openDatabase(`${table}.db`)
     const screenPadding = StylesContainers.screen.padding
     const [notes, setNotes] = useState([])
     const [loading, setLoading] = useState(true)

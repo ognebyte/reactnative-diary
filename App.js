@@ -12,10 +12,11 @@ const App = () => {
     const tableSubjects = 'subjects'
     const tableSubject = 'subject'
     const tableUsers = 'users'
+    const db = SQLite.openDatabase('diary.db')
 
     useEffect(
         () => {
-            SQLite.openDatabase(`${tableNotes}.db`).transaction(tx => 
+            db.transaction(tx => 
                 tx.executeSql(`CREATE TABLE IF NOT EXISTS ${tableNotes}
                     (
                         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -24,7 +25,7 @@ const App = () => {
                     )`
                 )
             );
-            SQLite.openDatabase(`${tableSubjects}.db`).transaction(tx => 
+            db.transaction(tx => 
                 tx.executeSql(`CREATE TABLE IF NOT EXISTS ${tableSubjects}
                     (
                         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -33,7 +34,7 @@ const App = () => {
                     )`
                 )
             );
-            SQLite.openDatabase(`${tableSubject}.db`).transaction(tx => 
+            db.transaction(tx => 
                 tx.executeSql(`CREATE TABLE IF NOT EXISTS ${tableSubject}
                     (
                         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -47,7 +48,7 @@ const App = () => {
                     )`
                 )
             );
-            SQLite.openDatabase(`${tableUsers}.db`).transaction(tx => 
+            db.transaction(tx => 
                 tx.executeSql(`CREATE TABLE IF NOT EXISTS ${tableUsers}
                     (
                         id INTEGER PRIMARY KEY AUTOINCREMENT,

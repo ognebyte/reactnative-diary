@@ -16,8 +16,8 @@ import IconPlus from '../../assets/svg/plus'
 
 
 const Tasks = (props) => {
+    const db = SQLite.openDatabase('diary.db')
     const table = 'subject'
-    const db = SQLite.openDatabase(`${table}.db`)
     const subject_id = props.subjectId
     const screenPadding = StylesContainers.screen.padding
     const [subjectTask, setSubjectTask] = useState([])

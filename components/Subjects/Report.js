@@ -10,8 +10,8 @@ import StylesReport from './styles/report'
 const windowWidth = Dimensions.get('window').width
 
 const Report = (props) => {
+    const db = SQLite.openDatabase('diary.db')
     const table = 'subject'
-    const db = SQLite.openDatabase(`${table}.db`)
     const subject_id = props.subjectId
     const [tasks, setTasks] = useState(0)
     const [tasksDone, setTasksDone] = useState(0)

@@ -16,8 +16,8 @@ const windowDimensions = Dimensions.get('window');
 const windowHeight = windowDimensions.height
 
 const HomeRoute = ({ navigation }) => {
+    const db = SQLite.openDatabase('diary.db')
     const table = 'subject'
-    const db = SQLite.openDatabase(`${table}.db`)
     const screenPadding = StylesContainers.screen.padding
     let prev = ''
     const [tasks, setTasks] = useState([])

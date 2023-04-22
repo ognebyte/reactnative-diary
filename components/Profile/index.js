@@ -10,8 +10,8 @@ import StylesTexts from '../style/texts';
 import Auth from './Auth';
 
 const Profile = () => {
+    const db = SQLite.openDatabase('diary.db')
     const table = 'users'
-    const db = SQLite.openDatabase(`${table}.db`)
     const [isAuth, setIsAuth] = useState('')
 
     useEffect(() => {

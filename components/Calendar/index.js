@@ -1,9 +1,9 @@
-import React, { useState, useEffect, useMemo, Component } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import * as SQLite from 'expo-sqlite'
 import moment from 'moment';
-import { FlashList } from "@shopify/flash-list";
 import { CalendarList, LocaleConfig } from 'react-native-calendars';
-import { Alert, StyleSheet, Text, View, TouchableOpacity, RefreshControl, ScrollView } from 'react-native';
+import { Text, View, TouchableOpacity, RefreshControl, ScrollView, ActivityIndicator } from 'react-native';
+import { FlashList } from '@shopify/flash-list';
 
 LocaleConfig.locales['ru'] = {
     monthNames: ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь', 'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'],
@@ -16,76 +16,90 @@ LocaleConfig.defaultLocale = 'ru';
 import StylesContainers from '../style/containers';
 import StylesButtons from '../style/buttons';
 import StylesTexts from '../style/texts';
-
-import CalendarItem from './CalendarItem';
+import Styles from './style'
 
 import ArrowForward from '../../assets/svg/arrow-forward'
 import ArrowBack from '../../assets/svg/arrow-back'
 
 const CalendarScreen = () => {
+    const db = SQLite.openDatabase('diary.db')
     const table = 'subject'
-    const db = SQLite.openDatabase(`${table}.db`)
+    const table_subjects = 'subjects'
+
     const [selectedDay, setSelectedDay] = useState(moment().format('YYYY-MM-DD'));
+    const [currentMonth, setCurrentMonth] = useState(moment().format('M'));
 
     const [tasks, setTasks] = useState([])
-    const [loading, setLoading] = useState(true)
-
     const [markedDates, setMarkedDates] = useState({})
+
+    const [loadingMonth, setLoadingMonth] = useState(true)
+    const [loadingDay, setLoadingDay] = useState(false)
+    
     const mark = ({marked: true, dotColor: 'red'})
 
-    const refresh = React.useCallback(() => {
-        setTimeout(() => {
-            setLoading(false)
-        }, 500)
-    }, []);
-    
-    useEffect(() => {
-        loadMonth(new Date().getMonth() + 1)
-        refresh()
-    }, [])
+    useMemo(() => {
+        setLoadingDay(true)
+        let startDay = moment(selectedDay).valueOf()
+        let endDay = moment(selectedDay).valueOf() + 24*60*60*1000
+        db.transaction(tx => {
+            tx.executeSql(`SELECT
+                ${table_subjects}.id AS subjects_id,
+                ${table_subjects}.title AS subjects_title,
+                ${table_subjects}.createdBy AS subjects_createdBy,
 
+                ${table}.id AS subject_id,
+                ${table}.subject_id AS subject_subject_id,
+                ${table}.title AS subject_title,
+                ${table}.description AS subject_description,
+                ${table}.grade AS subject_grade,
+                ${table}.isComplete AS subject_isComplete,
+                ${table}.createdAt AS subject_createdAt,
+                ${table}.deadline AS subject_deadline
+                FROM ${table}, ${table_subjects} WHERE deadline >= ? AND deadline < ? AND subjects_id = subject_subject_id ORDER BY deadline`,
+                [startDay, endDay],
 
-    const loadMonth = (month) => {
-        let firstDay = new Date(moment().format('YYYY'), month-1, 1).valueOf()
-        let lastDat = new Date(moment().format('YYYY'), month, 1).valueOf()
-        setMarkedDates({})
-        db.transaction(tx =>
-            tx.executeSql(`SELECT * FROM ${table} WHERE deadline >= ? AND deadline < ? ORDER BY deadline DESC`, [firstDay, lastDat],
                 (_, res) => {
-                    var rows = []
-                    for (let i = 0; i < res.rows.length; i++) {
-                        let row = res.rows.item(i)
-                        if (row.deadline !== null) {
-                            let dd = moment(row.deadline).format('YYYY-MM-DD')
-                            rows.push(row)
-                            setMarkedDates(date => {return {...date, [dd]: mark}})
-                        }
-                    }
-                    setTasks(rows)
+                    setTasks(res.rows._array)
+                    setLoadingDay(false)
                 },
                 (_, error) => console.log(error)
             )
-        )
-    }
+        })
+    }, [selectedDay]);
+
+    useMemo(() => {
+        setLoadingMonth(true)
+        let firstDay = new Date(moment().format('YYYY'), currentMonth-1, 1).valueOf()
+        let lastDay = new Date(moment().format('YYYY'), currentMonth, 1).valueOf()
+        
+        db.transaction(tx => {
+            tx.executeSql(`SELECT * FROM ${table} WHERE deadline >= ? AND deadline < ? ORDER BY deadline DESC`, [firstDay, lastDay],
+                (_, res) => {
+                    var dates = {}
+                    res.rows._array?.map(row => {
+                        if(!row.isComplete) Object.assign(dates, {[moment(row.deadline).format('YYYY-MM-DD')]: mark})
+                    })
+                    setMarkedDates(dates)
+                    setLoadingMonth(false)
+                },
+                (_, error) => console.log(error)
+            )
+        })
+    }, [currentMonth]);
 
     return (
-        <ScrollView refreshControl={ <RefreshControl refreshing={loading} onRefresh={refresh}/> }>
+        <ScrollView refreshControl={ <RefreshControl refreshing={loadingMonth} enabled={false}/> }>
             <View style={{flex: 1}}>
                 <CalendarList
-                    onMonthChange={date => {
-                        loadMonth(date.month)
-                    }}
-                    onDayPress={day => {
-                        console.log('loadDay')
-                        setSelectedDay(day.dateString);
-                    }}
-                    current={moment().format('YYYY-MM-DD')}
-                    markedDates={markedDates}
+                    markedDates={{...markedDates, [selectedDay]: {selected: true, disableTouchEvent: true}}}
+                    onMonthChange={date => setCurrentMonth(date.month)}
+                    onDayPress={day => setSelectedDay(moment(day.timestamp).format('YYYY-MM-DD'))}
 
                     renderArrow={(direction) => {return direction === 'left' ? <ArrowBack size={20}/> : <ArrowForward size={20}/>}}
                     hideArrows={false}
                     horizontal={true}
                     pagingEnabled={true}
+                    firstDay={1}
 
                     theme={{
                         todayBackgroundColor: StylesButtons.active.backgroundColor,
@@ -95,6 +109,41 @@ const CalendarScreen = () => {
                     }}
                 />
             </View>
+            {
+                loadingDay ? <ActivityIndicator animating={true} size={'large'} color={'black'} style={StylesContainers.screen}/>
+                :
+                <View style={[StylesContainers.screen, {alignItems: 'center', gap: 30}]}>
+                    <View>
+                        <Text style={StylesTexts.default}> {moment(selectedDay).format('D MMMM')} </Text>
+                    </View>
+                    
+                    {
+                        (tasks?.length || 0) === 0 ?
+                        <Text style={[StylesContainers.alert, StylesTexts.default, {padding: 40}]}> Ничего не запланировано </Text>
+                        :
+                        <View style={{flex: 1, width: '100%', height: 110 * tasks.length}}>
+                            <FlashList
+                                data={tasks}
+                                estimatedItemSize={110}
+                                scrollEnabled={false}
+                                renderItem={({item}) => (
+                                    <View key={item.subject_id} style={Styles.dayContainer}>
+                                        <Text style={StylesTexts.big}> {moment(item.subject_deadline).format('HH:mm')} </Text>
+                                        <TouchableOpacity style={[Styles.day, {backgroundColor: item.subject_isComplete ? 'green' : 'red'}]}>
+                                            <Text style={StylesTexts.big}>
+                                                {item.subject_title}
+                                            </Text>
+                                            <Text style={[StylesTexts.small, StylesTexts.fadeColor]}>
+                                                {item.subjects_title}
+                                            </Text>
+                                        </TouchableOpacity>
+                                    </View>
+                                )}
+                            />
+                        </View>
+                    }
+                </View>
+            }
         </ScrollView>
     );
 }

@@ -8,8 +8,8 @@ import StylesButtons from '../style/buttons';
 import StylesTexts from '../style/texts';
 
 const Auth = (props) => {
+    const db = SQLite.openDatabase('diary.db')
     const table = 'users'
-    const db = SQLite.openDatabase(`${table}.db`)
     const [isLogIn, setIsLogIn] = useState(true)
 
     const [inputLogin, setInputLogin] = useState('')
