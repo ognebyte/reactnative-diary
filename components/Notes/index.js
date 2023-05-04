@@ -108,50 +108,48 @@ const Notes = () => {
 
     return (
         <View style={{flex: 1}}>
-            {
-                !notes ? null : notes.length === 0 ?
-                <View style={[StylesContainers.screen, StylesContainers.default]}>
-                    <Text style={[StylesTexts.default, StylesContainers.alert, {padding: 40}]}> Нет записей </Text>
-                </View>
-                :
-                <FlashList
-                    data={notes}
-                    estimatedItemSize={130}
-                    keyExtractor={(item) => item.id}
-                    contentContainerStyle={{padding: screenPadding, paddingBottom: screenPadding*3}}
-                    refreshControl={ <RefreshControl refreshing={loading} onRefresh={refresh}/> }
-                    renderItem={
-                        ({item}) => (
-                            <TouchableOpacity activeOpacity={1}
-                                onLongPress={
-                                    () => {
-                                        setItemId(item.id)
-                                        setItemTitle(item.title)
-                                        setItemDescription(item.description)
-                                        setModalMore(true)
-                                    }
+            <FlashList
+                data={notes}
+                estimatedItemSize={130}
+                keyExtractor={(item) => item.id}
+                contentContainerStyle={{padding: screenPadding, paddingBottom: screenPadding*3}}
+                refreshControl={ <RefreshControl refreshing={loading} onRefresh={refresh}/> }
+                ListEmptyComponent={() => (
+                    <View style={[StylesContainers.screen, StylesContainers.default]}>
+                        <Text style={[StylesTexts.default, StylesContainers.alert, {padding: 40}]}> Нет записей </Text>
+                    </View>
+                )}
+                renderItem={
+                    ({item}) => (
+                        <TouchableOpacity activeOpacity={1}
+                            onLongPress={
+                                () => {
+                                    setItemId(item.id)
+                                    setItemTitle(item.title)
+                                    setItemDescription(item.description)
+                                    setModalMore(true)
                                 }
-                                onPress={
-                                    () => {
-                                        setItemId(item.id)
-                                        setItemTitle(item.title)
-                                        setItemDescription(item.description)
-                                        setModalEdit(true);
-                                    }
+                            }
+                            onPress={
+                                () => {
+                                    setItemId(item.id)
+                                    setItemTitle(item.title)
+                                    setItemDescription(item.description)
+                                    setModalEdit(true);
                                 }
-                                style={{marginBottom: screenPadding}}
-                            >
-                                <Note
-                                    id={item.id}
-                                    title={item.title}
-                                    description={item.description}
-                                    setDelete={() => deleteNote(item.id)}
-                                />
-                            </TouchableOpacity>
-                        )
-                        }
-                />
-            }
+                            }
+                            style={{marginBottom: screenPadding}}
+                        >
+                            <Note
+                                id={item.id}
+                                title={item.title}
+                                description={item.description}
+                                setDelete={() => deleteNote(item.id)}
+                            />
+                        </TouchableOpacity>
+                    )
+                    }
+            />
 
             {/* Modal More */}
             <Modal

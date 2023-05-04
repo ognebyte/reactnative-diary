@@ -1,22 +1,22 @@
-import React, { useRef } from "react";
+import React, { useRef } from 'react';
 import moment from 'moment';
-import 'moment/locale/ru'
-import { Animated, View, Text, Easing, TouchableOpacity } from 'react-native';
+import { Text, View, TouchableOpacity, Animated, Easing } from 'react-native';
 import 'react-native-gesture-handler';
 import Swipeable from 'react-native-gesture-handler/Swipeable';
 
-import StylesContainers from '../style/containers'
-import StylesButtons from '../style/buttons'
-import StylesTexts from '../style/texts'
-import StylesSubject from './styles/subject'
+import StylesContainers from '../style/containers';
+import StylesButtons from '../style/buttons';
+import StylesTexts from '../style/texts';
+import Styles from './style'
 
+import IconCheck from '../../assets/svg/check';
+import Chevron from '../../assets/svg/chevron'
 import IconDelete from '../../assets/svg/delete';
 import IconDone from '../../assets/svg/done';
 import IconUndone from '../../assets/svg/undone';
-import IconCheck from '../../assets/svg/check';
 
-const Task = (props) => {
-    const item = props.item
+const CalendarItem = (props) => {
+    const item = props.item;
     const iconSize = 30
     const animValue = new Animated.Value(0)
     const opacityValue = new Animated.Value(1)
@@ -41,11 +41,11 @@ const Task = (props) => {
         return (
             <View
                 style={[
-                    StylesSubject.subjectSwipe,
-                    item.isComplete ? StylesButtons.edit : StylesButtons.accept
+                    Styles.subjectSwipe,
+                    item.subject_isComplete ? StylesButtons.edit : StylesButtons.accept
                 ]}>
                 {
-                    item.isComplete ?
+                    item.subject_isComplete ?
                         <View style={{ alignItems: 'center' }}>
                             <IconUndone size={iconSize}/>
                             <Text style={StylesTexts.small}> Undone </Text>
@@ -64,7 +64,7 @@ const Task = (props) => {
         return (
             <TouchableOpacity onPress={() => animStart()}
                 style={[
-                    StylesSubject.subjectSwipe,
+                    Styles.subjectSwipe,
                     StylesButtons.delete
                 ]}>
                 <View style={{ alignItems: 'center' }}>
@@ -76,7 +76,7 @@ const Task = (props) => {
     };
 
     return (
-        <Animated.View style={[StylesSubject.subjectContainer, {transform: [{translateX: animValue}], opacity: opacityValue}]}>
+        <Animated.View style={[Styles.dayContainer, {transform: [{translateX: animValue}], opacity: opacityValue}]}>
             <Swipeable
                 ref={refSwipeable}
                 friction={3}
@@ -95,43 +95,35 @@ const Task = (props) => {
                 containerStyle={{flex: 1}}
                 childrenContainerStyle={{flex: 1}}
             >
-                <View style={[StylesSubject.subject, {flexDirection: 'row', height: 100}]}>
-                    <View style={{justifyContent: 'center'}}>
-                        <TouchableOpacity
-                            style={[{width: 30, height: 30}, item.isComplete ? [StylesSubject.taskCheck, {backgroundColor: '#000000'}] : StylesSubject.taskUnCheck]}
-                            onPress={() => props.setComplete()}
-                        >
-                            { item.isComplete ? <IconCheck color={'#ffffff'} size={'100%'}/> : null }
-                        </TouchableOpacity>
-                    </View>
-                    
-                    <View style={{flex: 1, flexDirection: 'column', justifyContent: 'center'}}>
-                        <Text style={[StylesTexts.big]} numberOfLines={1}>
-                            {item.title}
-                        </Text>
-                        
-                        <Text style={[StylesTexts.small, StylesTexts.fadeColor]}>
-                            Создано: {moment(item.createdAt).locale('ru').format('D MMMM')}
-                        </Text>
+                <View style={Styles.day}>
+                    <TouchableOpacity
+                        style={[{width: 30, height: 30}, item.subject_isComplete ? [Styles.taskCheck, {backgroundColor: '#000000'}] : Styles.taskUnCheck]}
+                        onPress={() => props.setComplete()}
+                        activeOpacity={0.6}
+                    >
+                        { item.subject_isComplete ? <IconCheck color={'#ffffff'} size={'100%'}/> : null }
+                    </TouchableOpacity>
 
-                        {/* {
-                            item.description.length === 0 ? null :
-                            <Text style={[StylesTexts.small, StylesSubject.textField]} numberOfLines={2}>
-                                {item.description}
+                    <View style={{flex: 1}}>
+                        <View style={{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center'}}>
+                            <Text style={[StylesTexts.big, {width: 'auto', maxWidth: '80%'}]} numberOfLines={1}>
+                                {item.subject_title}
                             </Text>
-                        } */}
-                        
-                        {
-                            !item.deadline ? null :
-                            <Text style={[StylesTexts.small, StylesTexts.fadeColor]}>
-                                Срок сдачи: {moment(item.deadline).format('D MMMM, HH:mm')}
+                            <Text style={[StylesTexts.default, StylesTexts.fadeColor]}>
+                                {moment(item.subject_deadline).format('HH:mm')}
                             </Text>
-                        }
+                        </View>
+
+                        <Text style={[StylesTexts.small, StylesTexts.fadeColor]} numberOfLines={1}>
+                            Предмет: {item.subjects_title}
+                        </Text>
                     </View>
+
+                    <Chevron size={25} color={StylesTexts.fadeColor.color}/>
                 </View>
             </Swipeable>
         </Animated.View>
     );
-};
+}
 
-export default Task;
+export default CalendarItem;

@@ -2,10 +2,15 @@ import React, { useEffect } from 'react';
 import * as SQLite from 'expo-sqlite'
 import 'react-native-gesture-handler';
 import { SafeAreaView, StatusBar } from 'react-native';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 import MainTab from './components/MainTab'
 import NavigationTheme from './components/style/navigation'
 
+/*
+    for build apk:
+    eas build -p android --profile preview
+*/
 
 const App = () => {
     const tableNotes = 'notes'
@@ -71,7 +76,9 @@ const App = () => {
                 backgroundColor={NavigationTheme.colors.card}
                 barStyle={NavigationTheme.dark ? 'light-content' : 'dark-content'}
             />
-            <MainTab/>
+            <GestureHandlerRootView style={{flex: 1}}>
+                <MainTab/>
+            </GestureHandlerRootView>
         </SafeAreaView>
     );
 };

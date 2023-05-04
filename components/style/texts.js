@@ -22,16 +22,34 @@ export default StyleSheet.create({
     fadeColor: { color: "#00000080" },
     placeholder: { color: "#B3B3B3" },
     
-    input: {
+    inputTitle: {
         color: '#000000',
         minHeight: 45,
         justifyContent: 'center',
         paddingHorizontal: 10,
         paddingVertical: 5,
-        backgroundColor: '#F0F0F0',
-        borderRadius: 10
+        borderBottomWidth: 2,
+        flexWrap: 'wrap'
     },
-    inputMulti: { textAlignVertical: 'top' },
+    inputExtra: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        minHeight: 45,
+        paddingHorizontal: 15,
+        paddingVertical: 5,
+        gap: 4,
+        backgroundColor: '#E6E6FA',
+        borderRadius: 30,
+    },
+    inputMulti: {
+        textAlignVertical: 'top',
+        minHeight: 45,
+        justifyContent: 'center',
+        paddingHorizontal: 10,
+        paddingVertical: 5,
+        backgroundColor: '#F0F0F0',
+        borderRadius: 10,
+    },
     borderBottom: {
         width: '100%',
         borderBottomWidth: 2,

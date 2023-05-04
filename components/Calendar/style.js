@@ -2,16 +2,17 @@ import { StyleSheet } from 'react-native';
 
 export default StyleSheet.create({
     dayContainer: {
-        width: '100%', height: 80,
-        flexDirection: 'row', alignItems: 'center',
-        gap: 15,
-        marginBottom: 30,
+        width: '100%', borderRadius: 10, overflow: 'hidden'
     },
     day: {
-        flex: 1, height: '100%',
-        justifyContent: 'center',
-        padding: 10,
-        borderRadius: 10,
+        width: '100%', flexDirection: 'row', alignItems: 'center',
+        height: 80, padding: 15,
+        backgroundColor: '#ffffff',
+        gap: 15
     },
+    subjectSwipe: { justifyContent: 'center', alignItems: 'center', width: '30%', paddingHorizontal: 10 },
+
+    taskUnCheck: { borderColor: '#B3B3B3', borderWidth: 2, borderRadius: 5 },
+    taskCheck: { borderRadius: 5 },
 
 });

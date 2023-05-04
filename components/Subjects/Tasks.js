@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from "react";
 import * as SQLite from 'expo-sqlite'
 import moment from 'moment';
 import { FlashList } from "@shopify/flash-list";
-import { Modal, View, TextInput, Text, TouchableOpacity, KeyboardAvoidingView, ScrollView, RefreshControl, Switch } from 'react-native';
+import { View, Text, TouchableOpacity, RefreshControl } from 'react-native';
 
 import StylesContainers from '../style/containers'
 import StylesTexts from '../style/texts'
@@ -28,10 +28,7 @@ const Tasks = (props) => {
     const [modalAdd, setModalAdd] = useState(false)
     
     const [itemId, setItemId] = useState('')
-    const [itemTitle, setItemTitle] = useState('')
-    const [itemGrade, setItemGrade] = useState('')
-    const [itemDescription, setItemDescription] = useState("")
-    const [itemDeadline, setItemDeadline] = useState("")
+    const [item, setItem] = useState({})
 
     const refresh = React.useCallback(() => {
         getAllSubjectTask()
@@ -140,99 +137,47 @@ const Tasks = (props) => {
 
     return (
         <View style={{flex: 1}}>
-            {
-                !subjectTask ? null : subjectTask.length === 0 ?
-                <View style={[StylesContainers.screen, StylesContainers.default]}>
-                    <Text style={[StylesTexts.default, StylesContainers.alert]}> Нет записей </Text>
-                </View>
-                :
-                <FlashList
-                    data={subjectTask}
-                    estimatedItemSize={130}
-                    keyExtractor={(item) => item.id}
-                    contentContainerStyle={{padding: screenPadding, paddingBottom: screenPadding*3}}
-                    refreshControl={ <RefreshControl refreshing={loading} onRefresh={refresh}/> }
-                    renderItem={
-                        ({item}) => (
-                            <TouchableOpacity activeOpacity={1}
-                                onLongPress={
-                                    () => {
-                                        setItemId(item.id)
-                                        setItemTitle(item.title)
-                                        setItemGrade(item.grade)
-                                        setItemDescription(item.description)
-                                        setItemDeadline(item.deadline)
-                                        setModalMore(true)
-                                    }
-                                }
-                                onPress={
-                                    () => {
-                                        setItemId(item.id)
-                                        setItemTitle(item.title)
-                                        setItemGrade(item.grade)
-                                        setItemDescription(item.description)
-                                        setItemDeadline(item.deadline);
-                                        setModalEdit(true);
-                                    }
-                                }
-                                style={{marginBottom: screenPadding}}
-                            >
-                                <Task
-                                    title={item.title}
-                                    grade={item.grade}
-                                    description={item.description}
-                                    isComplete={item.isComplete}
-                                    createdAt={item.createdAt}
-                                    deadline={item.deadline}
-                                    setDelete={() => deleteSubjectTask(item.id)}
-                                    setComplete={() => setIsComplete(item.id, item.isComplete ? 0 : 1)}
-                                />
-                            </TouchableOpacity>
-                        )
-                    }
-                />
-            }
-
-            {/* Modal More */}
-            <Modal
-                visible={modalMore}
-                animationType='fade'
-                transparent={true}
-                statusBarTranslucent={true}
-            >
-                <View style={[{flex: 1, justifyContent: 'center'}, StylesContainers.modalBackground]}>
-                    <View style={[StylesContainers.modal, { gap: 20 }]}>
-                        <TouchableOpacity activeOpacity={ 0.5 }
-                            onPress={() => { deleteSubjectTask(itemId); setModalMore(false); }}
-                            style={[StylesButtons.default, StylesButtons.bottom, StylesButtons.delete]}
-                            >
-                            <Text style={StylesTexts.default}> Удалить </Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity activeOpacity={ 0.5 }
-                            onPress={() => { setModalEdit(true); setModalMore(false); }}
-                            style={[StylesButtons.default, StylesButtons.bottom, StylesButtons.edit]}
-                        > 
-                            <Text style={StylesTexts.default}> Изменить </Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity activeOpacity={ 0.5 }
-                            onPress={() => setModalMore(false)}
-                            style={[StylesButtons.default, StylesButtons.bottom, StylesButtons.cancel]}
-                        >
-                            <Text style={[StylesTexts.default, StylesTexts.lightColor]}> Закрыть </Text>
-                        </TouchableOpacity>
+            <FlashList
+                data={subjectTask}
+                estimatedItemSize={130}
+                keyExtractor={(item) => item.id}
+                contentContainerStyle={{padding: screenPadding, paddingBottom: screenPadding*3}}
+                refreshControl={ <RefreshControl refreshing={loading} onRefresh={refresh}/> }
+                ListEmptyComponent={() => (
+                    <View style={[StylesContainers.screen, StylesContainers.default]}>
+                        <Text style={[StylesTexts.default, StylesContainers.alert, {padding: 40}]}> Нет записей </Text>
                     </View>
-
-                </View>
-            </Modal>
+                )}
+                renderItem={
+                    ({item}) => (
+                        <TouchableOpacity activeOpacity={1}
+                            onPress={
+                                () => {
+                                    setItemId(item.id)
+                                    setItem({title: item.title, grade: item.grade, description: item.description, deadline: item.deadline})
+                                    setModalEdit(true);
+                                }
+                            }
+                            style={{marginBottom: screenPadding}}
+                        >
+                            <Task
+                                item={item}
+                                setDelete={() => deleteSubjectTask(item.id)}
+                                setComplete={() => setIsComplete(item.id, item.isComplete ? 0 : 1)}
+                            />
+                        </TouchableOpacity>
+                    )
+                }
+            />
 
             {/* Modal Edit */}
             {
                 !modalEdit ? null :
                 <ModalEdit show={() => setModalEdit(false)}
-                    title={itemTitle}
-                    grade={itemGrade.toString()}
-                    description={itemDescription}
-                    deadline={itemDeadline}
+                    title={item.title}
+                    grade={item.grade.toString()}
+                    description={item.description}
+                    deadline={item.deadline}
                     descriptionShow={true} extraShow={true}
                     saveInputs={(t, d, g, dt) => saveInputs(t, d, g, dt)}
                 />

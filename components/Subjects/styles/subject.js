@@ -11,13 +11,13 @@ export default StyleSheet.create({
     subject: {
         width: '100%',
         justifyContent: 'center',
-        padding: 10,
-        gap: 10,
+        padding: 15,
+        gap: 15,
         backgroundColor: '#ffffff',
     },
     subjectSwipe: { justifyContent: 'center', alignItems: 'center', width: '30%', paddingHorizontal: 10 },
     textField: { color: '#00000080' },
-    taskUnCheck: { borderColor: '#B3B3B3', borderWidth: 2, borderRadius: 100 },
-    taskCheck: { borderRadius: 100 },
+    taskUnCheck: { borderColor: '#B3B3B3', borderWidth: 2, borderRadius: 5 },
+    taskCheck: { borderRadius: 5 },
     
 });

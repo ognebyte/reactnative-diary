@@ -61,7 +61,7 @@ const App = () => {
                                     focused ?
                                         <Animated.View style={[
                                             StylesContainers.default,
-                                            {position: 'absolute'},
+                                            { position: 'absolute' },
                                             NavigationTheme.tabBarIconBackground,
                                             { width: size, height: size, transform: [{ scale: tabBarIconBackgroundAnim }] }
                                         ]}/>

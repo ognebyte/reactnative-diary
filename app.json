@@ -2,10 +2,10 @@
   "expo": {
     "name": "Diary",
     "slug": "diary",
-    "version": "0.3.0",
+    "version": "0.3.1",
     "orientation": "portrait",
     "icon": "./assets/icon_app.png",
-    "userInterfaceStyle": "light",
+    "userInterfaceStyle": "automatic",
     "splash": {
       "image": "./assets/splash_app.png",
       "resizeMode": "contain",

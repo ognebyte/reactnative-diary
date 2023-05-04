@@ -56,7 +56,6 @@ const SubjectsScreen = ({ navigation }) => {
         }
     }
 
-    
     const getAllSubjects = () => {
         setSubjects([])
         db.transaction(tx =>
@@ -65,24 +64,6 @@ const SubjectsScreen = ({ navigation }) => {
                 (_, error) => console.log(error)
             )
         )
-    }
-
-    const addSubject = (title) => {
-        db.transaction(tx => {
-            tx.executeSql(
-                `INSERT INTO ${table} (title, createdBy) VALUES (?, ?)`, [title, user],
-                (_, res) => {
-                    setSubjects(
-                        item => [
-                            {id: res.insertId, title: title, createdBy: user},
-                            ...item
-                        ]
-                    )
-                },
-                (_, error) => console.log(error)
-            );
-        });
-        setModalAdd(false)
     }
 
     const deleteSubject = (id) => {
@@ -98,8 +79,24 @@ const SubjectsScreen = ({ navigation }) => {
                 (_, error) => console.log(error)
             );
         })
-        const dbChild = SQLite.openDatabase(`subject.db`)
-        dbChild.transaction(tx => {tx.executeSql(`DELETE FROM subject WHERE subject_id = ?`, [id])})
+        db.transaction(tx => {tx.executeSql(`DELETE FROM subject WHERE subject_id = ?`, [id])})
+    }
+
+    const addSubject = (title) => {
+        db.transaction(tx => {
+            tx.executeSql(
+                `INSERT INTO ${table} (title) VALUES (?)`, [title],
+                (_, res) => {
+                    setSubjects(
+                        item => [
+                            {id: res.insertId, title: title},
+                            ...item
+                        ]
+                    )
+                },
+                (_, error) => console.log(error)
+            );
+        });
     }
     
     const saveInputs = (title) => {
@@ -121,76 +118,36 @@ const SubjectsScreen = ({ navigation }) => {
 
     return (
         <View style={{flex: 1}}>
-            {
-                !subjects ? null : subjects.length === 0 ?
-                <View style={[StylesContainers.screen, StylesContainers.default]}>
-                    <Text style={[StylesTexts.default, StylesContainers.alert, {padding: 40}]}> Нет записей </Text>
-                </View>
-                :
-                <FlashList
-                    data={subjects}
-                    estimatedItemSize={80}
-                    keyExtractor={(item) => item.id}
-                    contentContainerStyle={{padding: screenPadding, paddingBottom: screenPadding*3}}
-                    refreshControl={ <RefreshControl refreshing={loading} onRefresh={refresh}/> }
-                    renderItem={
-                        ({item}) => (
-                            <TouchableOpacity activeOpacity={1}
-                                onLongPress={
-                                    () => {
-                                        setModalMore(true)
-                                        setItemId(item.id)
-                                        setItemTitle(item.title)
-                                    }
-                                }
-                                onPress={
-                                    () => { navigation.navigate('SubjectScreen', { subjectId: item.id, createdBy: item.createdBy }) }
-                                }
-                                style={{marginBottom: screenPadding}}
-                            >
-                                <Subject
-                                    title={item.title}
-                                    createdBy={item.createdBy}
-                                    // user={user}
-                                    setDelete={() => deleteSubject(item.id)}
-                                />
-                            </TouchableOpacity>
-                        )
-                    }
-                />
-            }
-
-            {/* Modal More */}
-            <Modal
-                visible={modalMore}
-                animationType='fade'
-                transparent={true}
-                statusBarTranslucent={true}
-            >
-                <View style={[{flex: 1, justifyContent: 'center'}, StylesContainers.modalBackground]}>
-                    <View style={[StylesContainers.modal, { gap: 20 }]}>
-                        <TouchableOpacity activeOpacity={ 0.5 }
-                            onPress={() => { deleteSubject(itemId); setModalMore(false); }}
-                            style={[StylesButtons.default, StylesButtons.bottom, StylesButtons.delete]}
-                            >
-                            <Text style={StylesTexts.default}> Удалить </Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity activeOpacity={ 0.5 }
-                            onPress={() => { setModalEdit(true); setModalMore(false); }}
-                            style={[StylesButtons.default, StylesButtons.bottom, StylesButtons.edit]}
-                        >
-                            <Text style={StylesTexts.default}> Изменить </Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity activeOpacity={ 0.5 }
-                            onPress={() => setModalMore(false)}
-                            style={[StylesButtons.default, StylesButtons.bottom, StylesButtons.cancel]}
-                        >
-                            <Text style={[StylesTexts.default, StylesTexts.lightColor]}> Закрыть </Text>
-                        </TouchableOpacity>
+            <FlashList
+                data={subjects}
+                estimatedItemSize={80}
+                keyExtractor={(item) => item.id}
+                contentContainerStyle={{padding: screenPadding, paddingBottom: screenPadding*3}}
+                refreshControl={<RefreshControl refreshing={loading} onRefresh={refresh}/>}
+                ListEmptyComponent={() => (
+                    <View style={[StylesContainers.screen, StylesContainers.default]}>
+                        <Text style={[StylesTexts.default, StylesContainers.alert, {padding: 40}]}> Нет записей </Text>
                     </View>
-
-                </View>
-            </Modal>
+                )}
+                renderItem={
+                    ({item}) => (
+                        <TouchableOpacity activeOpacity={1}
+                            onPress={
+                                () => { navigation.navigate('SubjectScreen', { subjectId: item.id, createdBy: item.createdBy }) }
+                            }
+                            style={{marginBottom: screenPadding}}
+                        >
+                            <Subject
+                                title={item.title}
+                                createdBy={item.createdBy}
+                                // user={user}
+                                edit={() => {setItemId(item.id); setItemTitle(item.title); setModalEdit(true)}}
+                                setDelete={() => deleteSubject(item.id)}
+                            />
+                        </TouchableOpacity>
+                    )
+                }
+            />
 
             {/* Modal Edit */}
             {

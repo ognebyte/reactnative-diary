@@ -2,19 +2,23 @@ import React, { useState, useRef, useEffect } from "react";
 import moment from 'moment';
 import 'moment/locale/ru'
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
-import { Modal, View, TextInput, Text, TouchableOpacity, KeyboardAvoidingView, ScrollView, Dimensions } from 'react-native';
+import { View, TextInput, Text, TouchableOpacity, Keyboard, ScrollView } from 'react-native';
+import Modal from "react-native-modal";
 
 import StylesContainers from '../style/containers'
 import StylesButtons from '../style/buttons'
 import StylesTexts from '../style/texts'
 
+import Close from '../../assets/svg/close'
+
 const ModalAdd = (props) => {
+    const [modal, setModal] = useState(true)
     const inputSecond = useRef(null)
     const inputThird = useRef(null)
     const [inputTitle, setInputTitle] = useState('')
     const [inputDescription, setInputDescription] = useState("")
-    const [inputGrade, setInputGrade] = useState("")
-    
+    const [inputGrade, setInputGrade] = useState("")    
+
     const [modalDate, setModalDate] = useState(false)
     const [date, setDate] = useState('')
     const [modalTime, setModalTime] = useState(false)
@@ -29,139 +33,148 @@ const ModalAdd = (props) => {
                 datetime = `${!date ? '' : moment(date).format('YYYY-MM-DD')} ${!time ? '00:00:00' : moment(time).format('HH:mm:ss')}`
             }
             props.addInputs(inputTitle, inputDescription, inputGrade, datetime)
+            setModal(false)
         }
     }
 
     return (
-        <Modal visible={true} animationType='slide' transparent={true}>
-            <KeyboardAvoidingView behavior='height'
-                style={StylesContainers.modalBackground}
-            >
-                <View style={StylesContainers.modalContainer}>
-                    <ScrollView>
-                        <View style={StylesContainers.modal}>
-                            <View style={{gap: 30}}>
-                                <Text style={StylesTexts.big}>
-                                    Создание нового задания
-                                </Text>
-                                
-                                <View style={{gap: 5}}>
-                                    <Text style={StylesTexts.big}> Заголовок </Text>
-                                    <TextInput
-                                        autoFocus={true}
-                                        blurOnSubmit={false}
-                                        inputMode="text"
-                                        placeholder="Введите заголовок"
-                                        returnKeyType='next'
-                                        value={inputTitle}
-                                        onChangeText={(v) => setInputTitle(v)}
-                                        onSubmitEditing={() => props.extraShow ? inputThird.current.focus() : inputSecond.current.focus()}
-                                        style={StylesTexts.input}
-                                        placeholderTextColor={StylesTexts.placeholder.color}
-                                        maxLength={50}
-                                    />
-                                </View>
-                                
-                                { !props.extraShow ? null :
-                                    <View style={StylesContainers.column}>
-                                        <View style={StylesContainers.rowSpace}>
-                                            <TouchableOpacity onPress={() => {setModalDate(true)}}
-                                                style={[StylesTexts.input, {flex: 0.5}]}
-                                            >
-                                                <Text style={[!date ? StylesTexts.placeholder : null]}>
-                                                    {!date ? 'Без срока сдачи' : `Срок сдачи: ${moment(date).locale('ru').format('D MMMM')}`}
-                                                </Text>
-                                            </TouchableOpacity>
-
-                                            <DateTimePickerModal
-                                                isVisible={modalDate}
-                                                mode='date'
-                                                onHide={() => setModalDate(false)}
-                                                onConfirm={(d) => {
-                                                    setDate(d)
-                                                    setModalDate(false)
-                                                }}
-                                                onCancel={() => { setDate(''); setModalDate(false) }}
-                                            />
-
+        <Modal isVisible={modal}
+            onModalHide={() => props.show()}
+            // swipeDirection={'right'}
+            // onSwipeComplete={() => setModal(false)}
+            backdropOpacity={0.5}
+            animationOutTiming={500}
+            backdropTransitionOutTiming={500}
+            style={{justifyContent: 'flex-end', margin: 0}}
+        >
+            <View>
+                <ScrollView contentContainerStyle={{paddingTop: 150}}>
+                    <View style={StylesContainers.modal}>
+                        <View style={{gap: 30}}>
+                            <Text style={StylesTexts.big}>
+                                Создание нового задания
+                            </Text>
+                            
+                            <TextInput
+                                autoFocus={true}
+                                blurOnSubmit={false}
+                                inputMode="text"
+                                placeholder="Введите заголовок"
+                                returnKeyType='next'
+                                value={inputTitle}
+                                onChangeText={(v) => setInputTitle(v)}
+                                style={[StylesTexts.big, StylesTexts.inputTitle, {borderColor: 'black'}]}
+                                placeholderTextColor={StylesTexts.placeholder.color}
+                                maxLength={50}
+                            />
+                            
+                            { !props.extraShow ? null :
+                                <View style={StylesContainers.column}>
+                                    <View style={{flexDirection: 'row', gap: 10}}>
+                                        <TouchableOpacity onPress={() => {setModalDate(true)}} style={[StylesTexts.inputExtra]}>
+                                            <Text style={[!date ? StylesTexts.fadeColor : null]}>
+                                                {!date ? ' Без срока сдачи ' : ` Срок сдачи: ${moment(date).locale('ru').format('D MMMM')} `}
+                                            </Text>
                                             {
-                                                !date ? null :
-                                                <TouchableOpacity onPress={() => {setModalTime(true)}}
-                                                    style={[StylesTexts.input, {flex: 0.4}]}
-                                                >
-                                                    <Text style={[!time ? StylesTexts.placeholder : null]}>
-                                                        {!time ? 'Время' : `Время: ${moment(time).format('HH:mm')}`}
-                                                    </Text>
+                                                !date ? null : 
+                                                <TouchableOpacity style={{}} onPress={() => setDate(null)}>
+                                                    <Close size={22} color={'black'}/>
                                                 </TouchableOpacity>
                                             }
+                                        </TouchableOpacity>
 
-                                            <DateTimePickerModal
-                                                isVisible={modalTime}
-                                                mode='time'
-                                                onHide={() => setModalTime(false)}
-                                                onConfirm={(d) => {
-                                                    setTime(d)
-                                                    setModalTime(false)
-                                                }}
-                                                onCancel={() => { setTime(''); setModalTime(false) }}
-                                            />
-                                        </View>
+                                        <DateTimePickerModal
+                                            isVisible={modalDate}
+                                            mode='date'
+                                            onHide={() => setModalDate(false)}
+                                            onConfirm={(d) => {
+                                                setDate(d)
+                                                setModalDate(false)
+                                            }}
+                                            onCancel={() => { setModalDate(false) }}
+                                        />
 
-                                        <TextInput
-                                            ref={inputThird}
-                                            blurOnSubmit={false}
-                                            inputMode="numeric"
-                                            placeholder="Баллов"
-                                            returnKeyType='next'
-                                            value={inputGrade}
-                                            onChangeText={(v) => setInputGrade(v)}
-                                            onSubmitEditing={() => inputSecond.current.focus()}
-                                            style={[StylesTexts.input, {width: 100}]}
-                                            placeholderTextColor={StylesTexts.placeholder.color}
-                                            numberOfLines={1}
-                                            maxLength={10}
+                                        {
+                                            !date ? null :
+                                            <TouchableOpacity onPress={() => {setModalTime(true)}}
+                                                style={[StylesTexts.inputExtra]}
+                                            >
+                                                <Text style={[!time || moment(time).format('HH:mm') == '00:00' ? StylesTexts.fadeColor : null]}>
+                                                    {!time ? ' Время: 00:00 ' : ` Время: ${moment(time).format('HH:mm')} `}
+                                                </Text>
+                                                {
+                                                    !time || moment(time).format('HH:mm') == '00:00' ? null : 
+                                                    <TouchableOpacity onPress={() => setTime(null)}>
+                                                        <Close size={22} color={'black'}/>
+                                                    </TouchableOpacity>
+                                                }
+                                            </TouchableOpacity>
+                                        }
+
+                                        <DateTimePickerModal
+                                            isVisible={modalTime}
+                                            mode='time'
+                                            onHide={() => setModalTime(false)}
+                                            onConfirm={(d) => {
+                                                setTime(d)
+                                                setModalTime(false)
+                                            }}
+                                            onCancel={() => { setModalTime(false) }}
                                         />
                                     </View>
-                                }
-                                { !props.descriptionShow ? null :
-                                    <View style={{gap: 5}}>
-                                        <Text style={StylesTexts.big}> Описание </Text>
-                                        <TextInput
-                                            ref={inputSecond}
-                                            blurOnSubmit={false}
-                                            inputMode="text"
-                                            placeholder="Введите описание"
-                                            value={inputDescription}
-                                            onChangeText={(v) => setInputDescription(v)}
-                                            style={[StylesTexts.input, StylesTexts.inputMulti]}
-                                            placeholderTextColor={StylesTexts.placeholder.color}
-                                            multiline={true}
-                                        />
-                                    </View>
-                                }
-                            </View>
 
-                            <View style={{flexDirection: 'row', width: '100%', marginTop: 100, gap: 10}}>
-                                <TouchableOpacity
-                                    activeOpacity={ 0.5 }
-                                    style={[StylesButtons.default, StylesButtons.bottom, StylesButtons.cancel, { flex: 0.5 }]}
-                                    onPress={() => props.show()}
-                                >
-                                    <Text style={[StylesTexts.default, StylesTexts.lightColor]}> Закрыть </Text>
-                                </TouchableOpacity>
-
-                                <TouchableOpacity
-                                    activeOpacity={ 0.5 }
-                                    style={[StylesButtons.default, StylesButtons.bottom, StylesButtons.accept, { flex: 0.5 }]}
-                                    onPress={() => checkTitle()}
-                                >
-                                    <Text style={[StylesTexts.default]}> Создать </Text>
-                                </TouchableOpacity>
-                            </View>
+                                    <TextInput
+                                        blurOnSubmit={false}
+                                        inputMode="numeric"
+                                        placeholder="Баллов"
+                                        returnKeyType='done'
+                                        value={inputGrade}
+                                        onChangeText={(v) => setInputGrade(v)}
+                                        onSubmitEditing={() => Keyboard.dismiss()}
+                                        style={[StylesTexts.small, StylesTexts.inputExtra, {width: 100}]}
+                                        placeholderTextColor={StylesTexts.fadeColor.color}
+                                        numberOfLines={1}
+                                        maxLength={10}
+                                    />
+                                </View>
+                            }
+                            { !props.descriptionShow ? null :
+                                <View style={{overflow: 'hidden'}}>
+                                    <TextInput
+                                        ref={inputSecond}
+                                        blurOnSubmit={false}
+                                        inputMode="text"
+                                        placeholder="Описание"
+                                        value={inputDescription}
+                                        onChangeText={(v) => setInputDescription(v)}
+                                        style={[StylesTexts.input, StylesTexts.inputMulti]}
+                                        placeholderTextColor={StylesTexts.placeholder.color}
+                                        multiline={true}
+                                    />
+                                </View>
+                            }
                         </View>
-                    </ScrollView>
-                </View>
-            </KeyboardAvoidingView>
+
+                        <View style={{flexDirection: 'row', width: '100%', marginTop: 100, gap: 10}}>
+                            <TouchableOpacity
+                                activeOpacity={ 0.5 }
+                                style={[StylesButtons.default, StylesButtons.bottom, { flex: 0.5, backgroundColor: 'black' }]}
+                                onPress={() => setModal(false)}
+                            >
+                                <Text style={[StylesTexts.default, StylesTexts.lightColor]}> Закрыть </Text>
+                            </TouchableOpacity>
+
+                            <TouchableOpacity
+                                activeOpacity={ 0.5 }
+                                style={[StylesButtons.default, StylesButtons.bottom, StylesButtons.accept, { flex: 0.5 }]}
+                                onPress={() => checkTitle()}
+                            >
+                                <Text style={[StylesTexts.default]}> Создать </Text>
+                            </TouchableOpacity>
+                        </View>
+                    </View>
+                </ScrollView>
+            </View>
         </Modal>
     );
 };
