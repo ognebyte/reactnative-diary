@@ -15,35 +15,33 @@ import NavigationTheme from './components/style/navigation'
 const App = () => {
     const tableNotes = 'notes'
     const tableSubjects = 'subjects'
-    const tableSubject = 'subject'
+    const tableAssignments = 'assignments'
     const tableUsers = 'users'
+    const tableSchedule = 'schedule'
+    const tableDays = 'days'
     const db = SQLite.openDatabase('diary.db')
 
     useEffect(
         () => {
-            db.transaction(tx => 
+            db.transaction(tx => {
                 tx.executeSql(`CREATE TABLE IF NOT EXISTS ${tableNotes}
                     (
                         id INTEGER PRIMARY KEY AUTOINCREMENT,
                         title TEXT,
                         description TEXT
                     )`
-                )
-            );
-            db.transaction(tx => 
+                );
                 tx.executeSql(`CREATE TABLE IF NOT EXISTS ${tableSubjects}
                     (
                         id INTEGER PRIMARY KEY AUTOINCREMENT,
                         title TEXT,
-                        createdBy TEXT REFERENCES users(login)
+                        createdBy TEXT
                     )`
-                )
-            );
-            db.transaction(tx => 
-                tx.executeSql(`CREATE TABLE IF NOT EXISTS ${tableSubject}
+                );
+                tx.executeSql(`CREATE TABLE IF NOT EXISTS ${tableAssignments}
                     (
                         id INTEGER PRIMARY KEY AUTOINCREMENT,
-                        subject_id INTEGER REFERENCES subjects(id),
+                        subject_id INTEGER,
                         title TEXT,
                         description TEXT,
                         grade INTEGER,
@@ -51,23 +49,31 @@ const App = () => {
                         createdAt DATE,
                         deadline DATE
                     )`
-                )
-            );
-            db.transaction(tx => 
-                tx.executeSql(`CREATE TABLE IF NOT EXISTS ${tableUsers}
+                );
+                tx.executeSql(`CREATE TABLE IF NOT EXISTS ${tableSchedule}
                     (
                         id INTEGER PRIMARY KEY AUTOINCREMENT,
-                        login TEXT,
-                        password TEXT,
-                        firstname TEXT,
-                        lastname TEXT,
-                        email TEXT,
-                        birthday DATE
+                        title TEXT,
+                        saturday INTEGER
                     )`
-                )
-            );
+                );
+                tx.executeSql(`CREATE TABLE IF NOT EXISTS ${tableDays}
+                    (
+                        id INTEGER PRIMARY KEY AUTOINCREMENT,
+                        schedule_id INTEGER,
+                        subject_id INTEGER,
+                        place INTEGER,
+                        weekNumber INTEGER,
+                        timeStart TEXT,
+                        timeEnd TEXT,
+                        courseType TEXT,
+                        instructor TEXT,
+                        location TEXT,
+                        note TEXT
+                    )`
+                );
+            });
         }
-
     , [])
 
     return (

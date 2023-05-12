@@ -8,6 +8,7 @@ import StylesTexts from '../style/texts';
 import HomeScreen from './HomeScreen';
 import Notes from '../Notes';
 import SubjectsStack from '../Subjects'
+import Schedule from '../Schedule'
 
 const Stack = createStackNavigator();
 
@@ -23,7 +24,7 @@ const HomeStack = () => {
 
     return (
         <Stack.Navigator screenOptions={({route}) => ({
-            headerShown: route.name != 'SubjectsStack' ? true : false,
+            headerShown: route.name == 'Notes' ? true : false,
             gestureEnabled: true,
             gestureDirection: 'horizontal',
             
@@ -38,6 +39,7 @@ const HomeStack = () => {
             <Stack.Screen name="HomeScreen" component={HomeScreen} options={{title: 'Главная'}} />
             <Stack.Screen name="Notes" component={Notes} options={{title: 'Заметки'}}  />
             <Stack.Screen name="SubjectsStack" component={SubjectsStack} options={{title: 'Предметы'}}  />
+            <Stack.Screen name="Schedule" component={Schedule} options={{title: 'Расписание'}}  />
         </Stack.Navigator>
     );
 };

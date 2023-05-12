@@ -15,7 +15,7 @@ import IconDone from '../../assets/svg/done';
 import IconUndone from '../../assets/svg/undone';
 import IconCheck from '../../assets/svg/check';
 
-const Task = (props) => {
+const Assignments = (props) => {
     const item = props.item
     const iconSize = 30
     const animValue = new Animated.Value(0)
@@ -134,4 +134,4 @@ const Task = (props) => {
     );
 };
 
-export default Task;
+export default Assignments;

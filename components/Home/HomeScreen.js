@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo, Component } from 'react';
-import { View, ImageBackground, Text, TouchableOpacity, StyleSheet, ScrollView, Dimensions } from 'react-native';
+import { View, ImageBackground, Text, TouchableOpacity, StyleSheet, ScrollView, Dimensions, RefreshControl } from 'react-native';
 import * as SQLite from 'expo-sqlite'
 import moment from 'moment';
 
@@ -17,7 +17,7 @@ const windowHeight = windowDimensions.height
 
 const HomeRoute = ({ navigation }) => {
     const db = SQLite.openDatabase('diary.db')
-    const table = 'subject'
+    const table = 'assignments'
     const screenPadding = StylesContainers.screen.padding
     let prev = ''
     const [tasks, setTasks] = useState([])
@@ -53,7 +53,7 @@ const HomeRoute = ({ navigation }) => {
     }
 
     return (
-        <ScrollView>
+        <ScrollView  refreshControl={<RefreshControl refreshing={loading} onRefresh={refresh}/>}>
             <View style={StylesContainers.default}>
                 <ImageBackground source={Psycho} style={styles.background}>
                 </ImageBackground>
@@ -74,6 +74,14 @@ const HomeRoute = ({ navigation }) => {
                             onPress={() => navigation.navigate("SubjectsStack")}
                         >
                             <Text style={[StylesTexts.default, StylesTexts.lightColor]}> Предметы </Text>
+                        </TouchableOpacity>
+                        
+                        <TouchableOpacity
+                            activeOpacity={ 0.5 }
+                            style={[StylesButtons.default, StylesButtons.buttonsDefault, {backgroundColor: '#000000'}]}
+                            onPress={() => navigation.navigate("Schedule")}
+                        >
+                            <Text style={[StylesTexts.default, StylesTexts.lightColor]}> Расписание </Text>
                         </TouchableOpacity>
                     </View>
 

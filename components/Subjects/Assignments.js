@@ -8,16 +8,16 @@ import StylesContainers from '../style/containers'
 import StylesTexts from '../style/texts'
 import StylesButtons from '../style/buttons'
 
-import Task from "./Task";
+import Assignment from "./Assignment";
 import ModalEdit from '../Modals/ModalEdit'
 import ModalAdd from '../Modals/ModalAdd'
 
 import IconPlus from '../../assets/svg/plus'
 
 
-const Tasks = (props) => {
+const Assignments = (props) => {
     const db = SQLite.openDatabase('diary.db')
-    const table = 'subject'
+    const table = 'assignments'
     const subject_id = props.subjectId
     const screenPadding = StylesContainers.screen.padding
     const [subjectTask, setSubjectTask] = useState([])
@@ -160,7 +160,7 @@ const Tasks = (props) => {
                             }
                             style={{marginBottom: screenPadding}}
                         >
-                            <Task
+                            <Assignment
                                 item={item}
                                 setDelete={() => deleteSubjectTask(item.id)}
                                 setComplete={() => setIsComplete(item.id, item.isComplete ? 0 : 1)}
@@ -208,4 +208,4 @@ const Tasks = (props) => {
     );
 };
 
-export default Tasks;
+export default Assignments;

@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import * as SQLite from 'expo-sqlite'
-import { View, Text, TouchableOpacity, Button } from 'react-native';
+import { View, Text, TouchableOpacity, ScrollView } from 'react-native';
 import AwesomeAlert from 'react-native-awesome-alerts';
 
 import StylesContainers from './style/containers';
@@ -16,10 +16,7 @@ import { Platform } from 'react-native';
 const Setting = () => {
     const [showAlertDropTable, setShowAlertDropTable] = useState(false)
     const [db, setDb] = useState(SQLite.openDatabase('diary.db'))
-    const tableNotes = 'notes'
-    const tableSubjects = 'subjects'
-    const tableSubject = 'subject'
-    const tableUsers = 'users'
+    const tables = ['notes', 'subjects', 'assignments', 'schedule', 'days']
     
     const exportDb = async () => {
         if (Platform.OS === "android") {
@@ -77,6 +74,7 @@ const Setting = () => {
                     for (let i = 0; i < res.rows.length; i++) {
                         console.log(res.rows.item(i))
                     }
+                    console.log()
                 },
                 (_, error) => console.log(error)
             )
@@ -92,81 +90,55 @@ const Setting = () => {
     }
 
     return (
-        <View style={[StylesContainers.default, StylesContainers.screen, {gap: 50}]}>
-            <View style={{alignItems: 'center', gap: 20}}>
-                
-                {/* SELECT TABLE */}
-                <TouchableOpacity
-                    style={[StylesButtons.default, StylesButtons.buttonsDefault, {backgroundColor: '#000000'}]}
-                    onPress={() => exportDb()}
-                >
-                    <Text style={[StylesTexts.default, StylesTexts.lightColor]}> Export DB </Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                    style={[StylesButtons.default, StylesButtons.buttonsDefault, {backgroundColor: '#000000'}]}
-                    onPress={() => importDb()}
-                >
-                    <Text style={[StylesTexts.default, StylesTexts.lightColor]}> Import DB </Text>
-                </TouchableOpacity>
+        <View style={[StylesContainers.default]}>
+            <ScrollView style={[{width: '100%'}]} contentContainerStyle={{alignItems: 'center'}}>
+                <View style={{gap: 20, padding: 30}}>
+                    <TouchableOpacity
+                        style={[StylesButtons.default, StylesButtons.buttonsDefault, {backgroundColor: '#000000'}]}
+                        onPress={() => exportDb()}
+                    >
+                        <Text style={[StylesTexts.default, StylesTexts.lightColor]}> Export DB </Text>
+                    </TouchableOpacity>
 
-                <TouchableOpacity
-                    style={[StylesButtons.default, StylesButtons.buttonsDefault, {backgroundColor: '#000000'}]}
-                    onPress={() => getTable(tableNotes)}
-                >
-                    <Text style={[StylesTexts.default, StylesTexts.lightColor]}> Get table notes </Text>
-                </TouchableOpacity>
+                    <TouchableOpacity
+                        style={[StylesButtons.default, StylesButtons.buttonsDefault, {backgroundColor: '#000000'}]}
+                        onPress={() => importDb()}
+                    >
+                        <Text style={[StylesTexts.default, StylesTexts.lightColor]}> Import DB </Text>
+                    </TouchableOpacity>
 
-                <TouchableOpacity
-                    style={[StylesButtons.default, StylesButtons.buttonsDefault, {backgroundColor: '#000000'}]}
-                    onPress={() => getTable(tableSubjects)}
-                >
-                    <Text style={[StylesTexts.default, StylesTexts.lightColor]}> Get table subjects </Text>
-                </TouchableOpacity>
 
-                <TouchableOpacity
-                    style={[StylesButtons.default, StylesButtons.buttonsDefault, {backgroundColor: '#000000'}]}
-                    onPress={() => getTable(tableSubject)}
-                >
-                    <Text style={[StylesTexts.default, StylesTexts.lightColor]}> Get table subject </Text>
-                </TouchableOpacity>
-                
-                <TouchableOpacity
-                    style={[StylesButtons.default, StylesButtons.buttonsDefault, {backgroundColor: '#000000'}]}
-                    onPress={() => getTable(tableUsers)}
-                >
-                    <Text style={[StylesTexts.default, StylesTexts.lightColor]}> Get table users </Text>
-                </TouchableOpacity>
+                    {/* SELECT TABLE */}
+                    {
+                        tables.map(
+                                (name, i) => (
+                                    <TouchableOpacity key={i}
+                                        style={[StylesButtons.default, StylesButtons.buttonsDefault, {backgroundColor: '#000000'}]}
+                                        onPress={() => getTable(name)}
+                                    >
+                                        <Text style={[StylesTexts.default, StylesTexts.lightColor]}> Get table {name} </Text>
+                                    </TouchableOpacity>
+                                )
+                        )
+                    }
+                    
 
-                {/* DROP TABLE */}
-                <TouchableOpacity
-                    style={[StylesButtons.default, StylesButtons.buttonsDefault, {backgroundColor: '#000000'}]}
-                    onPress={() => setShowAlertDropTable(true)}
-                >
-                    <Text style={[StylesTexts.default, StylesTexts.lightColor]}> Drop table notes </Text>
-                </TouchableOpacity>
+                    {/* DROP TABLE */}
+                    {
+                        tables.map(
+                            (name, i) => (
+                                <TouchableOpacity key={i}
+                                    style={[StylesButtons.default, StylesButtons.buttonsDefault, {backgroundColor: '#000000'}]}
+                                    onPress={() => dropTable(name)}
+                                >
+                                    <Text style={[StylesTexts.default, StylesTexts.lightColor]}> Drop table {name} </Text>
+                                </TouchableOpacity>
+                            )
+                        )
 
-                <TouchableOpacity
-                    style={[StylesButtons.default, StylesButtons.buttonsDefault, {backgroundColor: '#000000'}]}
-                    onPress={() => dropTable(tableSubjects)}
-                >
-                    <Text style={[StylesTexts.default, StylesTexts.lightColor]}> Drop table subjects </Text>
-                </TouchableOpacity>
-
-                <TouchableOpacity
-                    style={[StylesButtons.default, StylesButtons.buttonsDefault, {backgroundColor: '#000000'}]}
-                    onPress={() => dropTable(tableSubject)}
-                >
-                    <Text style={[StylesTexts.default, StylesTexts.lightColor]}> Drop table subject </Text>
-                </TouchableOpacity>
-
-                <TouchableOpacity
-                    style={[StylesButtons.default, StylesButtons.buttonsDefault, {backgroundColor: '#000000'}]}
-                    onPress={() => dropTable(tableUsers)}
-                >
-                    <Text style={[StylesTexts.default, StylesTexts.lightColor]}> Drop table users </Text>
-                </TouchableOpacity>
-
-            </View>
+                    }
+                </View>
+            </ScrollView>
 
             <AwesomeAlert
                 show={showAlertDropTable}

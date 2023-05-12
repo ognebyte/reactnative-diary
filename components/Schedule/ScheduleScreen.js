@@ -1,38 +1,36 @@
 import React, { useState, useEffect } from "react";
 import * as SQLite from 'expo-sqlite'
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { Modal, View, TextInput, Text, TouchableOpacity, KeyboardAvoidingView, ScrollView, RefreshControl } from 'react-native';
+import { Modal, View, TextInput, Text, TouchableOpacity, ScrollView, RefreshControl } from 'react-native';
 import { FlashList } from "@shopify/flash-list";
 
 import StylesContainers from '../style/containers'
 import StylesButtons from '../style/buttons'
 import StylesTexts from '../style/texts'
+import Styles from './styles'
 
-import Subject from './Subject'
 import ModalEdit from '../Modals/ModalEdit'
 import ModalAdd from '../Modals/ModalAdd'
+import ScheduleItem from "./ScheduleItem";
 
 import IconPlus from '../../assets/svg/plus'
 
 
-const SubjectsScreen = ({ navigation }) => {
+const ScheduleScreen = ({ navigation }) => {
     const db = SQLite.openDatabase('diary.db')
-    const table = 'subjects'
-    const tableAssignments = 'assignments'
-    const tableWeek = 'week'
+    const table = 'schedule'
     const screenPadding = StylesContainers.screen.padding
-    const [subjects, setSubjects] = useState([])
+    const [schedule, setSchedule] = useState([])
     const [loading, setLoading] = useState(true)
-    const [user, setUser] = useState(null)
     
     const [modalEdit, setModalEdit] = useState(false)
     const [modalAdd, setModalAdd] = useState(false)
     
     const [itemId, setItemId] = useState('')
-    const [itemTitle, setItemTitle] = useState('')
+    const [item, setItem] = useState('')
 
     const refresh = React.useCallback(() => {
-        getAllSubjects()
+        getAllSchedule()
         setTimeout(() => {
             setLoading(false)
         }, 500)
@@ -40,56 +38,42 @@ const SubjectsScreen = ({ navigation }) => {
 
     useEffect(
         () => {
-            getAuth()
             refresh()
         }, []
     )
 
-    const getAuth = async () => {
-        try {
-            let value = await AsyncStorage.getItem('auth')
-            if (value !== null) {
-                setUser(value)
-            }
-            // else console.log('user not auth')
-        } catch (e) {
-            alert('ERROR: getAuth');
-        }
-    }
-
-    const getAllSubjects = () => {
-        setSubjects([])
+    const getAllSchedule = () => {
+        setSchedule([])
         db.transaction(tx =>
             tx.executeSql(`SELECT * FROM ${table} ORDER BY id DESC`, [],
-                (_, res) => setSubjects(res.rows._array),
+                (_, res) => setSchedule(res.rows._array),
                 (_, error) => console.log(error)
             )
         )
     }
 
-    const deleteSubject = (id) => {
+    const deleteSchedule = (id) => {
         db.transaction(tx => {
             tx.executeSql(`DELETE FROM ${table} WHERE id = ?`, [id],
                 (_, res) => {
                     if (res.rowsAffected > 0) {
-                        let items = [...subjects]
-                        items.splice(subjects.findIndex((item) => { return item.id === id }), 1)
-                        setSubjects(items)
+                        let items = [...schedule]
+                        items.splice(schedule.findIndex((item) => { return item.id === id }), 1)
+                        setSchedule(items)
                     }
                 },
                 (_, error) => console.log(error)
             );
+            tx.executeSql(`DELETE FROM days WHERE schedule_id = ?`, [id])
         })
-        db.transaction(tx => {tx.executeSql(`DELETE FROM ${tableAssignments} WHERE subject_id = ?`, [id])})
-        db.transaction(tx => {tx.executeSql(`DELETE FROM ${tableWeek} WHERE subject_id = ?`, [id])})
     }
 
-    const addSubject = (title) => {
+    const addSchedule = (title, saturday) => {
         db.transaction(tx => {
             tx.executeSql(
-                `INSERT INTO ${table} (title) VALUES (?)`, [title],
+                `INSERT INTO ${table} (title, saturday) VALUES (?, ?, ?)`, [title, saturday],
                 (_, res) => {
-                    setSubjects(
+                    setSchedule(
                         item => [
                             {id: res.insertId, title: title},
                             ...item
@@ -101,16 +85,17 @@ const SubjectsScreen = ({ navigation }) => {
         });
     }
     
-    const saveInputs = (title) => {
+    const saveInputs = (title, saturday) => {
         db.transaction(tx =>
             tx.executeSql(
-                `UPDATE ${table} SET title = ? WHERE id = ?`, [title, itemId],
+                `UPDATE ${table} SET title = ?, saturday = ? WHERE id = ?`, [title, saturday, itemId],
                 (_, res) => {
                     if (res.rowsAffected > 0) {
-                        var rows = [...subjects];
+                        var rows = [...schedule];
                         const indexToUpdate = rows.findIndex(item => item.id === itemId);
                         rows[indexToUpdate].title = title;
-                        setSubjects(rows);
+                        rows[indexToUpdate].saturday = saturday;
+                        setSchedule(rows);
                     }
                 },
                 (_, error) => console.log(error)
@@ -121,7 +106,7 @@ const SubjectsScreen = ({ navigation }) => {
     return (
         <View style={{flex: 1}}>
             <FlashList
-                data={subjects}
+                data={schedule}
                 estimatedItemSize={80}
                 keyExtractor={(item) => item.id}
                 contentContainerStyle={{padding: screenPadding, paddingBottom: screenPadding*3}}
@@ -135,16 +120,20 @@ const SubjectsScreen = ({ navigation }) => {
                     ({item}) => (
                         <TouchableOpacity activeOpacity={1}
                             onPress={
-                                () => { navigation.navigate('SubjectScreen', { subjectId: item.id, subjectTitle: item.title }) }
+                                () => {
+                                    navigation.navigate('DaysScreen', { id: item.id, title: item.title, saturday: item.saturday })
+                                }
                             }
                             style={{marginBottom: screenPadding}}
                         >
-                            <Subject
+                            <ScheduleItem
                                 title={item.title}
-                                createdBy={item.createdBy}
-                                // user={user}
-                                edit={() => {setItemId(item.id); setItemTitle(item.title); setModalEdit(true)}}
-                                setDelete={() => deleteSubject(item.id)}
+                                edit={() => {
+                                    setItemId(item.id);
+                                    setItem({title: item.title, saturday: item.saturday});
+                                    setModalEdit(true)}
+                                }
+                                setDelete={() => deleteSchedule(item.id)}
                             />
                         </TouchableOpacity>
                     )
@@ -155,8 +144,9 @@ const SubjectsScreen = ({ navigation }) => {
             {
                 !modalEdit ? null :
                 <ModalEdit show={() => setModalEdit(false)}
-                    title={itemTitle}
-                    saveInputs={(t) => saveInputs(t)}
+                    title={item.title} saturday={item.saturday}
+                    saveInputs={(t, saturday) => saveInputs(t, saturday)}
+                    schedule={true}
                 />
             }
 
@@ -164,23 +154,24 @@ const SubjectsScreen = ({ navigation }) => {
             {
                 !modalAdd ? null :
                 <ModalAdd show={() => setModalAdd(false)}
-                    addInputs={(t) => addSubject(t)}
+                    addInputs={(t, saturday) => addSchedule(t, saturday)}
+                    schedule={true}
                 />
             }
 
             {/* Button Add */}
             <View style={[StylesButtons.buttonFooter, modalAdd ? {display: 'none'} : {display: 'flex'}]}>
                 <TouchableOpacity
-                    activeOpacity={ 0.5 }
+                    activeOpacity={0.5}
                     style={StylesButtons.addButton}
                     onPress={() => setModalAdd(true)}
                 >
                     <IconPlus size={30} color={'black'}/>
-                    <Text style={StylesTexts.small}> Добавить предмет </Text>
+                    <Text style={StylesTexts.small}> Добавить расписание </Text>
                 </TouchableOpacity>
             </View>
         </View>
     );
 };
 
-export default SubjectsScreen;
+export default ScheduleScreen;

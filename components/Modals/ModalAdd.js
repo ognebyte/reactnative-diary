@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from "react";
 import moment from 'moment';
 import 'moment/locale/ru'
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
-import { View, TextInput, Text, TouchableOpacity, Keyboard, ScrollView } from 'react-native';
+import { View, TextInput, Text, TouchableOpacity, Keyboard, ScrollView, Switch } from 'react-native';
 import Modal from "react-native-modal";
 
 import StylesContainers from '../style/containers'
@@ -23,17 +23,24 @@ const ModalAdd = (props) => {
     const [date, setDate] = useState('')
     const [modalTime, setModalTime] = useState(false)
     const [time, setTime] = useState('')
-
+    
+    const [saturday, setSaturday] = useState(true)
+    const [sunday, setSunday] = useState(false)
 
     const checkTitle = () => {
         if(inputTitle.length === 0) alert('Заголовок пустой!')
         else {
-            let datetime = null
-            if(date) {
-                datetime = `${!date ? '' : moment(date).format('YYYY-MM-DD')} ${!time ? '00:00:00' : moment(time).format('HH:mm:ss')}`
+            if(props.week) {
+                props.addInputs(inputTitle, saturday ? 1 : 0, sunday ? 1 : 0)
+                setModal(false)
+            } else {
+                let datetime = null
+                if(date) {
+                    datetime = `${!date ? '' : moment(date).format('YYYY-MM-DD')} ${!time ? '00:00:00' : moment(time).format('HH:mm:ss')}`
+                }
+                props.addInputs(inputTitle, inputDescription, inputGrade, datetime)
+                setModal(false)
             }
-            props.addInputs(inputTitle, inputDescription, inputGrade, datetime)
-            setModal(false)
         }
     }
 
@@ -43,8 +50,7 @@ const ModalAdd = (props) => {
             // swipeDirection={'right'}
             // onSwipeComplete={() => setModal(false)}
             backdropOpacity={0.5}
-            animationOutTiming={500}
-            backdropTransitionOutTiming={500}
+            animationOutTiming={300}
             style={{justifyContent: 'flex-end', margin: 0}}
         >
             <View>
@@ -52,19 +58,21 @@ const ModalAdd = (props) => {
                     <View style={StylesContainers.modal}>
                         <View style={{gap: 30}}>
                             <Text style={StylesTexts.big}>
-                                Создание нового задания
+                                Создание новой записи
                             </Text>
                             
                             <TextInput
                                 autoFocus={true}
-                                blurOnSubmit={false}
+                                blurOnSubmit={true}
                                 inputMode="text"
                                 placeholder="Введите заголовок"
-                                returnKeyType='next'
+                                returnKeyType='done'
                                 value={inputTitle}
                                 onChangeText={(v) => setInputTitle(v)}
+                                onSubmitEditing={() => Keyboard.dismiss()}
                                 style={[StylesTexts.big, StylesTexts.inputTitle, {borderColor: 'black'}]}
                                 placeholderTextColor={StylesTexts.placeholder.color}
+                                multiline={true}
                                 maxLength={50}
                             />
                             
@@ -151,6 +159,28 @@ const ModalAdd = (props) => {
                                         placeholderTextColor={StylesTexts.placeholder.color}
                                         multiline={true}
                                     />
+                                </View>
+                            }
+                            { !props.week ? null :
+                                <View>
+                                    <View style={{flexDirection: 'row', alignItems: 'center'}}>
+                                        <Text style={[StylesTexts.default, {color: saturday ? '#000000' : StylesTexts.fadeColor.color}]}> Суббота </Text>
+                                        <Switch style={{margin: 0, padding: 0}}
+                                            trackColor={{false: StylesButtons.inactiveBack.backgroundColor, true: StylesButtons.activeBack.backgroundColor}}
+                                            thumbColor={saturday ? StylesButtons.active.backgroundColor : StylesButtons.inactive.backgroundColor}
+                                            onValueChange={() => setSaturday(!saturday)}
+                                            value={saturday}
+                                        />
+                                    </View>
+                                    <View style={{flexDirection: 'row', alignItems: 'center'}}>
+                                        <Text style={[StylesTexts.default, {color: sunday ? '#000000' : StylesTexts.fadeColor.color}]}> Воскресенье </Text>
+                                        <Switch style={{margin: 0, padding: 0}}
+                                            trackColor={{false: StylesButtons.inactiveBack.backgroundColor, true: StylesButtons.activeBack.backgroundColor}}
+                                            thumbColor={sunday ? StylesButtons.active.backgroundColor : StylesButtons.inactive.backgroundColor}
+                                            onValueChange={() => setSunday(!sunday)}
+                                            value={sunday}
+                                        />
+                                    </View>
                                 </View>
                             }
                         </View>

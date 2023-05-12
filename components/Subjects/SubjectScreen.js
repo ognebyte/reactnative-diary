@@ -7,16 +7,16 @@ import { TabView, TabBar, SceneMap } from 'react-native-tab-view';
 import StylesNavigation from '../style/navigation'
 import StylesTexts from '../style/texts'
 
-import Tasks from "./Tasks";
+import Assignments from "./Assignments";
 import Report from "./Report";
 import Users from "./Users";
 
 
 const SubjectScreen = ({ route, navigation }) => {
     const db = SQLite.openDatabase('diary.db')
-    const table = 'subjects'
     const subjectId = route.params.subjectId
-    const createdBy = route.params.createdBy
+    const subjectTitle = route.params.subjectTitle
+    // const createdBy = route.params.createdBy
 
     const [load, setLoad] = useState(false)
     const screens = {
@@ -30,14 +30,7 @@ const SubjectScreen = ({ route, navigation }) => {
     useEffect(
         () => {
             // if (createdBy) screens.routes.push({ key: 'third', title: ' Пользователи ' })
-            db.transaction(tx => 
-                tx.executeSql(`SELECT * FROM ${table} WHERE id = ?`, [subjectId],
-                    (_, res) => {
-                        navigation.setOptions({ headerTitle: res.rows.item(0).title })
-                    },
-                    (_, error) => console.log(error)
-                )
-            );
+            navigation.setOptions({ headerTitle: subjectTitle })
         }, []
     )
 
@@ -46,10 +39,10 @@ const SubjectScreen = ({ route, navigation }) => {
             swipeEnabled={false}
             navigationState={screens}
             renderScene={SceneMap({
-                first: () => <Tasks subjectId={subjectId}/>,
-                second: () => <Report subjectId={subjectId} createdBy={createdBy} load={load}/>,
+                first: () => <Assignments subjectId={subjectId}/>,
+                second: () => <Report subjectId={subjectId} load={load}/>,
             })}
-            // third: () => <Users subjectId={subjectId} createdBy={createdBy}/>,
+            // third: () => <Users subjectId={subjectId}/>,
             initialLayout={{ width: Dimensions.get('window').width }}
             onIndexChange={ index => {setLoad(!load); screens.index = index}}
             renderTabBar={ props => <TabBar {...props}

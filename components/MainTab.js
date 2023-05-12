@@ -58,14 +58,14 @@ const App = () => {
                         return (
                             <View style={[StylesContainers.default, StylesContainers.fill]}>
                                 {
-                                    focused ?
-                                        <Animated.View style={[
-                                            StylesContainers.default,
-                                            { position: 'absolute' },
-                                            NavigationTheme.tabBarIconBackground,
-                                            { width: size, height: size, transform: [{ scale: tabBarIconBackgroundAnim }] }
-                                        ]}/>
-                                        : null
+                                    !focused ? null
+                                    :
+                                    <Animated.View style={[
+                                        StylesContainers.default,
+                                        { position: 'absolute' },
+                                        NavigationTheme.tabBarIconBackground,
+                                        { width: size, height: size, transform: [{ scale: tabBarIconBackgroundAnim }] }
+                                    ]}/>
                                 }
                                 <View style={[StylesContainers.default, StylesContainers.fill]}>
                                     {

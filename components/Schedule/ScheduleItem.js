@@ -5,13 +5,13 @@ import Swipeable from 'react-native-gesture-handler/Swipeable';
 
 import StylesButtons from '../style/buttons'
 import StylesTexts from '../style/texts'
-import StylesSubject from './styles/subject'
+import Styles from './styles'
 
 import IconDelete from '../../assets/svg/delete';
 import IconEdit from '../../assets/svg/edit';
 import Chevron from "../../assets/svg/chevron";
 
-const Subject = (props) => {
+const ScheduleItem = (props) => {
     const iconSize = 20
     const animValue = new Animated.Value(0)
     const opacityValue = new Animated.Value(1)
@@ -36,7 +36,7 @@ const Subject = (props) => {
         return (
             <TouchableOpacity onPress={() => {props.edit(); refSwipeable.current.close()}}
                 style={[
-                    StylesSubject.subjectSwipe,
+                    Styles.swipe,
                     StylesButtons.edit
                 ]}>
                 <View style={{ alignItems: 'center' }}>
@@ -51,7 +51,7 @@ const Subject = (props) => {
         return (
             <TouchableOpacity onPress={() => animStart()}
                 style={[
-                    StylesSubject.subjectSwipe,
+                    Styles.swipe,
                     StylesButtons.delete
                 ]}>
                 <View style={{ alignItems: 'center' }}>
@@ -63,7 +63,7 @@ const Subject = (props) => {
     };
 
     return (
-        <Animated.View style={[StylesSubject.subjectContainer, {transform: [{translateX: animValue}], opacity: opacityValue}]}>
+        <Animated.View style={[Styles.animatedViewContainer, {transform: [{translateX: animValue}], opacity: opacityValue}]}>
             <Swipeable
                 ref={refSwipeable}
                 friction={3}
@@ -74,13 +74,10 @@ const Subject = (props) => {
                 containerStyle={{flex: 1}}
                 childrenContainerStyle={{flex: 1}}
             >
-                <View style={[StylesSubject.subject, {flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', height: 50}]}>
+                <View style={[Styles.animatedView, {flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', height: 50}]}>
                     <Text style={[StylesTexts.default, {maxWidth: '85%'}]} numberOfLines={1}> 
                         {props.title}
                     </Text>
-                    {/* <Text style={[StylesTexts.small, StylesTexts.fadeColor]} numberOfLines={1}> 
-                        Создал: {props.createdBy} {props.createdBy !== props.user ? null : `(Вы)`}
-                    </Text> */}
                     <Chevron size={25} color={'black'}/>
                 </View>
             </Swipeable>
@@ -88,4 +85,4 @@ const Subject = (props) => {
     );
 };
 
-export default Subject;
+export default ScheduleItem;

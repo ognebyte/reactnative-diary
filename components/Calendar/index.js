@@ -31,8 +31,8 @@ const windowHeight = Dimensions.get('window').height
 
 const CalendarScreen = () => {
     const db = SQLite.openDatabase('diary.db')
-    const table = 'subject'
-    const table_subjects = 'subjects'
+    const tableAssignments = 'assignments'
+    const tableSubjects = 'subjects'
 
     const [loading, setLoading] = useState(false)
     const [modalAdd, setModalAdd] = useState(false);
@@ -52,10 +52,10 @@ const CalendarScreen = () => {
     const [itemId, setItemId] = useState(null)
     const [item, setItem] = useState({})
     
-    const refresh = React.useCallback(() => {
+    const refresh = () => {
         setTrigger(!trigger)
         setLoading(false)
-    }, []);
+    }
 
     useMemo(() => {
         setLoadingDay(true)
@@ -63,19 +63,19 @@ const CalendarScreen = () => {
         let endDay = moment(selectedDay).valueOf() + 24*60*60*1000
         db.transaction(tx => {
             tx.executeSql(`SELECT
-                    ${table_subjects}.id AS subjects_id,
-                    ${table_subjects}.title AS subjects_title,
-                    ${table_subjects}.createdBy AS subjects_createdBy,
+                    ${tableSubjects}.id AS subjects_id,
+                    ${tableSubjects}.title AS subjects_title,
+                    ${tableSubjects}.createdBy AS subjects_createdBy,
 
-                    ${table}.id AS subject_id,
-                    ${table}.subject_id AS subject_subject_id,
-                    ${table}.title AS subject_title,
-                    ${table}.description AS subject_description,
-                    ${table}.grade AS subject_grade,
-                    ${table}.isComplete AS subject_isComplete,
-                    ${table}.createdAt AS subject_createdAt,
-                    ${table}.deadline AS subject_deadline
-                    FROM ${table}, ${table_subjects} WHERE deadline >= ? AND deadline < ? AND subjects_id = subject_subject_id ORDER BY deadline`,
+                    ${tableAssignments}.id AS subject_id,
+                    ${tableAssignments}.subject_id AS subject_subject_id,
+                    ${tableAssignments}.title AS subject_title,
+                    ${tableAssignments}.description AS subject_description,
+                    ${tableAssignments}.grade AS subject_grade,
+                    ${tableAssignments}.isComplete AS subject_isComplete,
+                    ${tableAssignments}.createdAt AS subject_createdAt,
+                    ${tableAssignments}.deadline AS subject_deadline
+                    FROM ${tableAssignments}, ${tableSubjects} WHERE deadline >= ? AND deadline < ? AND subjects_id = subject_subject_id ORDER BY deadline`,
                 [startDay, endDay],
 
                 (_, res) => {
@@ -93,7 +93,7 @@ const CalendarScreen = () => {
         let lastDay = new Date(moment().format('YYYY'), selectedMonth, 1).valueOf()
         
         db.transaction(tx => {
-            tx.executeSql(`SELECT * FROM ${table} WHERE deadline >= ? AND deadline < ? ORDER BY deadline DESC`, [firstDay, lastDay],
+            tx.executeSql(`SELECT * FROM ${tableAssignments} WHERE deadline >= ? AND deadline < ? ORDER BY deadline DESC`, [firstDay, lastDay],
                 (_, res) => {
                     var dates = {}
                     res.rows._array?.map(row => {
@@ -110,7 +110,7 @@ const CalendarScreen = () => {
     const setIsComplete = (id, value) => {
         db.transaction(tx =>
             tx.executeSql(
-                `UPDATE ${table} SET isComplete = ? WHERE id = ?`, [value, id],
+                `UPDATE ${tableAssignments} SET isComplete = ? WHERE id = ?`, [value, id],
                 (_, res) => {
                     if (res.rowsAffected > 0) {
                         var rows = [...tasks];
@@ -127,7 +127,7 @@ const CalendarScreen = () => {
     const addSubject = (title) => {
         db.transaction(tx => {
             tx.executeSql(
-                `INSERT INTO ${table} (title) VALUES (?)`, [title],
+                `INSERT INTO ${tableAssignments} (title) VALUES (?)`, [title],
                 (_, res) => {
                     setSubjects(
                         item => [
@@ -146,7 +146,7 @@ const CalendarScreen = () => {
         if (dt) datetime = Date.parse(dt)
         db.transaction(tx =>
             tx.executeSql(
-                `UPDATE ${table} SET title = ?, description = ?, grade = ?, deadline = ? WHERE id = ?`,
+                `UPDATE ${tableAssignments} SET title = ?, description = ?, grade = ?, deadline = ? WHERE id = ?`,
                 [title, description, grade, datetime, itemId],
                 (_, res) => {
                     if (res.rowsAffected > 0) {
@@ -166,7 +166,7 @@ const CalendarScreen = () => {
 
     const deleteSubjectTask = (id) => {
         db.transaction(tx =>
-            tx.executeSql(`DELETE FROM ${table} WHERE id = ?`, [id],
+            tx.executeSql(`DELETE FROM ${tableAssignments} WHERE id = ?`, [id],
                 (_, res) => {
                     if (res.rowsAffected > 0) {
                         let items = [...tasks]

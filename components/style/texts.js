@@ -22,6 +22,15 @@ export default StyleSheet.create({
     fadeColor: { color: "#00000080" },
     placeholder: { color: "#B3B3B3" },
     
+    input: {
+        justifyContent: 'center',
+        minHeight: 45,
+        paddingHorizontal: 10,
+        paddingVertical: 5,
+        borderRadius: 10,
+        backgroundColor: '#ffffff',
+        color: '#000000',
+    },
     inputTitle: {
         color: '#000000',
         minHeight: 45,

@@ -106,10 +106,10 @@ const CalendarItem = (props) => {
 
                     <View style={{flex: 1}}>
                         <View style={{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center'}}>
-                            <Text style={[StylesTexts.big, {width: 'auto', maxWidth: '80%'}]} numberOfLines={1}>
+                            <Text style={[StylesTexts.big, {width: '80%', flexWrap: 'nowrap'}]} numberOfLines={1}>
                                 {item.subject_title}
                             </Text>
-                            <Text style={[StylesTexts.default, StylesTexts.fadeColor]}>
+                            <Text style={[StylesTexts.default, StylesTexts.fadeColor, {textAlign: 'right'}]}>
                                 {moment(item.subject_deadline).format('HH:mm')}
                             </Text>
                         </View>

@@ -11,7 +11,7 @@ const windowWidth = Dimensions.get('window').width
 
 const Report = (props) => {
     const db = SQLite.openDatabase('diary.db')
-    const table = 'subject'
+    const table = 'assignments'
     const subject_id = props.subjectId
     const [tasks, setTasks] = useState(0)
     const [tasksDone, setTasksDone] = useState(0)

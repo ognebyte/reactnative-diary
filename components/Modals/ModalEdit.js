@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from "react";
 import moment from 'moment';
 import 'moment/locale/ru'
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
-import { View, TextInput, Text, TouchableOpacity, ScrollView, Dimensions, Keyboard } from 'react-native';
+import { View, TextInput, Text, TouchableOpacity, ScrollView, Dimensions, Keyboard, Switch } from 'react-native';
 import Modal from "react-native-modal";
 
 import StylesContainers from '../style/containers'
@@ -23,6 +23,7 @@ const ModalEdit = (props) => {
     const [inputDescription, setInputDescription] = useState(props.description)
     const [inputGrade, setInputGrade] = useState(props.grade)
     const inputDeadline = props.deadline
+    const [saturday, setSaturday] = useState(props.saturday == 1 ? true : false)
 
     const [titleEdit, setTitleEdit] = useState(false)
     const [modalDate, setModalDate] = useState(false)
@@ -36,20 +37,11 @@ const ModalEdit = (props) => {
             inputDescription != props.description ||
             inputGrade != props.grade ||
             date != props.deadline ||
-            time != props.deadline
+            time != props.deadline ||
+            saturday != props.saturday
         ) setEdited(true)
         else setEdited(false)
-    }, [inputTitle, inputDescription, inputGrade, date, time])
-
-
-    const handleOnScroll = e => {
-        console.log(e.nativeEvent.contentOffset.y)
-        if(e.nativeEvent.contentOffset.y === 0) {
-            setTop(true)
-        } else {
-            setTop(false)
-        }
-    };
+    }, [inputTitle, inputDescription, inputGrade, date, time, saturday])
 
     return (
         <Modal isVisible={modal}
@@ -159,6 +151,17 @@ const ModalEdit = (props) => {
                                     />
                                 </View>
                             }
+                            { !props.schedule ? null :
+                                <View style={{alignItems: 'center'}}>
+                                    <Text style={[StylesTexts.default, {color: saturday ? '#000000' : StylesTexts.fadeColor.color}]}> Суббота </Text>
+                                    <Switch style={{margin: 0, padding: 0}}
+                                        trackColor={{false: StylesButtons.inactiveBack.backgroundColor, true: StylesButtons.activeBack.backgroundColor}}
+                                        thumbColor={saturday ? StylesButtons.active.backgroundColor : StylesButtons.inactive.backgroundColor}
+                                        onValueChange={() => setSaturday(!saturday)}
+                                        value={saturday}
+                                    />
+                                </View>
+                            }
                         </View>
                         
                         <View style={{flexDirection: 'row', width: '100%', marginTop: 100, gap: 10}}>
@@ -172,11 +175,15 @@ const ModalEdit = (props) => {
                                 onPress={() => {
                                     if(inputTitle.length === 0) alert('Заголовок пустой!')
                                     else {
-                                        let datetime = null
-                                        if(date) {
-                                            datetime = `${!date ? '' : moment(date).format('YYYY-MM-DD')} ${!time ? '00:00:00' : moment(time).format('HH:mm:ss')}`
+                                        if (props.schedule) {
+                                            props.saveInputs(inputTitle, saturday? 1 : 0)
+                                        } else {
+                                            let datetime = null
+                                            if(date) {
+                                                datetime = `${!date ? '' : moment(date).format('YYYY-MM-DD')} ${!time ? '00:00:00' : moment(time).format('HH:mm:ss')}`
+                                            }
+                                            props.saveInputs(inputTitle, inputDescription, inputGrade, datetime)
                                         }
-                                        props.saveInputs(inputTitle, inputDescription, inputGrade, datetime)
                                         setEdited(!edited)
                                         setE(true)
                                     }
