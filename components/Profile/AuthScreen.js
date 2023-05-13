@@ -1,65 +1,64 @@
 import React, { useState, useRef, useEffect } from "react";
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword, sendPasswordResetEmail } from 'firebase/auth';
-import { auth } from '../../firebase'
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { setDoc, collection, doc } from 'firebase/firestore';
+import { FIREBASE_AUTH, FIREBASE_DB } from '../../config/firebase'
 import { View, TextInput, Text, TouchableOpacity, KeyboardAvoidingView, ActivityIndicator, ScrollView, Switch } from 'react-native';
+import Modal from "react-native-modal";
 
 import StylesContainers from '../style/containers';
 import StylesButtons from '../style/buttons';
 import StylesTexts from '../style/texts';
+import Styles from './styles'
 
-const Auth = (props) => {
+const AuthScreen = ({ navigation }) => {
     const [isLogIn, setIsLogIn] = useState(true)
     const [loading, setLoading] = useState(false)
     const [forgotPassword, setForgotPassword] = useState(false)
 
+    const [firstname, setFirstname] = useState('')
+    const [lastname, setLastname] = useState('')
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
-    const inputSecond = useRef(null)
+    const inputLastname = useRef(null)
+    const inputEmail = useRef(null)
+    const inputPassword = useRef(null)
     const [securityPassword, setSecurityPassword] = useState(true)
 
-    const setAuth = async (login) => {
-        try {
-            await AsyncStorage.setItem('auth', login)
-            props.checkAuth()
-        } catch (e) {
-            return alert('ERROR: setAuth');
-        }
-    }
 
-    const addUser = () => {
+    const auth = async (bool) => {
         if(email.length > 0) {
-            if (password.length < 8) alert('Длина пароля меньше 8!')
-            else {
-                createUserWithEmailAndPassword(auth, email, password)
-                .then(userCredentials => {
-                    const user = userCredentials.user;
-                    setAuth(user.email)
-                })
+            if (bool) {
+                setLoading(true)
+                await signInWithEmailAndPassword(FIREBASE_AUTH, email, password)
+                .then(() => navigation.navigate('ProfileScreen'))
                 .catch(error => alert(error.message));
+                setLoading(false)
+            } else {
+                if (firstname.length === 0 && firstname.length === 0) alert('Имя или фамилия не были записаны')
+                if (password.length < 8) alert('Длина пароля меньше 8!')
+                else {
+                    setLoading(true)
+                    await createUserWithEmailAndPassword(FIREBASE_AUTH, email, password)
+                    .then(async () => {
+                        await setDoc(doc(collection(FIREBASE_DB, 'users'), email), {firstname: firstname, lastname: lastname, birthday: null});
+                        navigation.navigate('ProfileScreen');
+                    })
+                    .catch(error => alert(error.message));
+                    setLoading(false)
+                }
             }
         } else {
             alert("Введите почту")
         }
     }
     
-    const checkUser = () => {
+    const resetPassword = async () => {
         if(email.length > 0) {
-            signInWithEmailAndPassword(auth, email, password)
-            .then(() => {
-                setAuth(email)
-            })
-            .catch(error => alert(error.message));
-        } else {
-            alert("Введите почту")
-        }
-    }
-    
-    const resetPassword = () => {
-        if(email.length > 0) {
-            sendPasswordResetEmail(auth, email)
+            setLoading(true)
+            await sendPasswordResetEmail(FIREBASE_AUTH, email)
             .then(() => alert('Запрос для сброса пароля отправлено!'))
             .catch(error => alert(error.message));
+            setLoading(false)
         } else {
             alert("Введите почту")
         }
@@ -77,11 +76,39 @@ const Auth = (props) => {
                     </Text>
 
                     <View style={{ gap: 20 }}>
+                        {
+                            isLogIn ? null :
+                            <>
+                                <TextInput
+                                    inputMode="text"
+                                    placeholder="Фамилия"
+                                    onSubmitEditing={() => inputLastname.current.focus()}
+                                    returnKeyType={forgotPassword ? 'done' : 'next'}
+                                    value={firstname}
+                                    onChangeText={(v) => setFirstname(v)}
+                                    style={[StylesTexts.input, StylesTexts.default]}
+                                    placeholderTextColor={StylesTexts.placeholder.color}
+                                    maxLength={50}
+                                />
+                                <TextInput
+                                    ref={inputLastname}
+                                    inputMode="text"
+                                    placeholder="Имя"
+                                    onSubmitEditing={() => inputEmail.current.focus()}
+                                    returnKeyType={forgotPassword ? 'done' : 'next'}
+                                    value={lastname}
+                                    onChangeText={(v) => setLastname(v)}
+                                    style={[StylesTexts.input, StylesTexts.default]}
+                                    placeholderTextColor={StylesTexts.placeholder.color}
+                                    maxLength={50}
+                                />
+                            </>
+                        }
                         <TextInput
+                            ref={inputEmail}
                             inputMode="email"
                             placeholder="Электронная почта"
-                            blurOnSubmit={true}
-                            onSubmitEditing={() => forgotPassword ? resetPassword() : inputSecond.current.focus()}
+                            onSubmitEditing={() => forgotPassword ? resetPassword() : inputPassword.current.focus()}
                             returnKeyType={forgotPassword ? 'done' : 'next'}
                             value={email}
                             onChangeText={(v) => setEmail(v)}
@@ -93,12 +120,11 @@ const Auth = (props) => {
                             forgotPassword ? null :
                             <>
                                 <TextInput
-                                    ref={inputSecond}
+                                    ref={inputPassword}
                                     secureTextEntry={securityPassword}
                                     inputMode="text"
                                     placeholder="Пароль"
-                                    blurOnSubmit={false}
-                                    onSubmitEditing={() => isLogIn ? checkUser() : addUser()}
+                                    onSubmitEditing={() => auth(isLogIn ? true : false)}
                                     returnKeyType={'done'}
                                     value={password}
                                     onChangeText={(v) => setPassword(v)}
@@ -123,7 +149,7 @@ const Auth = (props) => {
                         <TouchableOpacity
                             activeOpacity={ 0.5 }
                             style={[StylesButtons.default, StylesButtons.bottom, StylesButtons.accept]}
-                            onPress={() => forgotPassword ? resetPassword() : isLogIn ? checkUser() : addUser()}
+                            onPress={() => forgotPassword ? resetPassword() : auth(isLogIn ? true : false)}
                         >
                             <Text style={[StylesTexts.default]}>
                                 {
@@ -164,8 +190,14 @@ const Auth = (props) => {
                     </TouchableOpacity>
                 </View>
             }
+            <Modal isVisible={loading} animationIn={'fadeIn'} animationOut={'fadeOut'}>
+                <View style={Styles.modalLoading}>
+                    <Text style={[StylesTexts.lightColor, StylesTexts.default]}> Загрузка... </Text>
+                    <ActivityIndicator size={25} color={'white'}/>
+                </View>
+            </Modal>
         </View>
     )
 };
 
-export default Auth;
+export default AuthScreen;

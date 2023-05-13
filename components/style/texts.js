@@ -13,6 +13,10 @@ export default StyleSheet.create({
         fontSize: 26,
         fontWeight: '600',
     },
+    medium: {
+        fontSize: 22,
+        fontWeight: '400',
+    },
     small: {
         fontSize: 14,
         fontWeight: '400',

@@ -45,7 +45,6 @@ const App = () => {
                 screenListeners={{tabPress: tabBarIconPressed}}
                 screenOptions={({route}) => ({
                     tabBarHideOnKeyboard: true,
-                    headerShown: route.name != 'Home' ? true : false,
                     headerStyle: { backgroundColor: NavigationTheme.colors.headerBackground },
                     tabBarActiveTintColor: activeTintColor,
                     tabBarInactiveTintColor: inactiveTintColor,
@@ -88,7 +87,7 @@ const App = () => {
                 })}
             >
 
-                <Tab.Screen name='Home'
+                <Tab.Screen name='Home' options={{headerShown: false}}
                     children={() => <Home />}
                 />
 
@@ -104,7 +103,7 @@ const App = () => {
                 <Tab.Screen name='Setting' options={{title: 'Настройки'}}
                     children={() => <Setting />}
                 />
-                <Tab.Screen name='Profile' options={{title: 'Профиль'}}
+                <Tab.Screen name='Profile' options={{title: 'Профиль', headerShown: false}}
                     children={() => <Profile />}
                 />
 

@@ -23,5 +23,9 @@ export default StyleSheet.create({
         textAlign: 'center',
         backgroundColor: '#ffffff90',
         borderRadius: 10,
+    },
+    photoContainer: {
+        justifyContent: 'center', alignItems: 'center',
+        borderRadius: 100, backgroundColor: 'white',
     }
 });
