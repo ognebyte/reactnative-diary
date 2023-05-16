@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword, sendPasswordResetEmail } from 'firebase/auth';
 import { setDoc, collection, doc } from 'firebase/firestore';
-import { FIREBASE_AUTH, FIREBASE_DB } from '../../config/firebase'
+import { FIREBASE_AUTH, FIREBASE_DB } from 'config/firebase'
 import { View, TextInput, Text, TouchableOpacity, KeyboardAvoidingView, ActivityIndicator, ScrollView, Switch } from 'react-native';
 import Modal from "react-native-modal";
 
@@ -9,6 +9,11 @@ import StylesContainers from '../style/containers';
 import StylesButtons from '../style/buttons';
 import StylesTexts from '../style/texts';
 import Styles from './styles'
+
+import Loading from "../Modals/Loading";
+
+import EyeClosed from "assets/svg/eyeClosed";
+import EyeOpen from "assets/svg/eyeOpen";
 
 const AuthScreen = ({ navigation }) => {
     const [isLogIn, setIsLogIn] = useState(true)
@@ -66,6 +71,8 @@ const AuthScreen = ({ navigation }) => {
 
     return (
         <View style={{flex: 1, justifyContent: 'space-between'}}>
+            <Loading loading={loading}/>
+
             <ScrollView contentContainerStyle={StylesContainers.screen}>
                 <View style={[{ gap: 30 }]}>
                     <Text style={[StylesTexts.big, {alignSelf: 'center'}]}>
@@ -119,27 +126,25 @@ const AuthScreen = ({ navigation }) => {
                         {
                             forgotPassword ? null :
                             <>
-                                <TextInput
-                                    ref={inputPassword}
-                                    secureTextEntry={securityPassword}
-                                    inputMode="text"
-                                    placeholder="Пароль"
-                                    onSubmitEditing={() => auth(isLogIn ? true : false)}
-                                    returnKeyType={'done'}
-                                    value={password}
-                                    onChangeText={(v) => setPassword(v)}
-                                    style={[StylesTexts.input, StylesTexts.default]}
-                                    placeholderTextColor={StylesTexts.placeholder.color}
-                                    maxLength={50}
-                                />
-                                <View style={{flexDirection: 'row', alignItems: 'center'}}>
-                                    <Switch
-                                        trackColor={{false: StylesButtons.inactiveBack.backgroundColor, true: StylesButtons.activeBack.backgroundColor}}
-                                        thumbColor={!securityPassword ? StylesButtons.active.backgroundColor : StylesButtons.inactive.backgroundColor }
-                                        onValueChange={() => setSecurityPassword(!securityPassword)}
-                                        value={!securityPassword}
+                                <View style={{justifyContent: 'center'}}>
+                                    <TextInput
+                                        ref={inputPassword}
+                                        secureTextEntry={securityPassword}
+                                        inputMode="text"
+                                        placeholder="Пароль"
+                                        onSubmitEditing={() => auth(isLogIn ? true : false)}
+                                        returnKeyType={'done'}
+                                        value={password}
+                                        onChangeText={(v) => setPassword(v)}
+                                        style={[StylesTexts.input, StylesTexts.default, {paddingRight: 40}]}
+                                        placeholderTextColor={StylesTexts.placeholder.color}
+                                        maxLength={50}
                                     />
-                                    <Text> {securityPassword ? 'Показать пароль' : 'Скрыть пароль'} </Text>
+                                    <TouchableOpacity style={{position: 'absolute', right: 0, padding: 10}}
+                                        onPress={() => setSecurityPassword(!securityPassword)}
+                                    >
+                                        { securityPassword ? <EyeClosed size={25}/> : <EyeOpen size={25}/> }
+                                    </TouchableOpacity>
                                 </View>
                             </>
                         }
@@ -190,12 +195,6 @@ const AuthScreen = ({ navigation }) => {
                     </TouchableOpacity>
                 </View>
             }
-            <Modal isVisible={loading} animationIn={'fadeIn'} animationOut={'fadeOut'}>
-                <View style={Styles.modalLoading}>
-                    <Text style={[StylesTexts.lightColor, StylesTexts.default]}> Загрузка... </Text>
-                    <ActivityIndicator size={25} color={'white'}/>
-                </View>
-            </Modal>
         </View>
     )
 };

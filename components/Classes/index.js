@@ -4,12 +4,13 @@ import { Easing } from 'react-native';
 
 import NavigationTheme from '../style/navigation';
 
-import ScheduleScreen from "./ScheduleScreen";
-import DaysScreen from "./DaysScreen";
+import ClassesScreen from "./ClassesScreen";
+import ClassAdd from "./ClassAdd";
+
 
 const Stack = createStackNavigator();
 
-const ScheduleStack = () => {
+const ClassesStack = () => {
     const transitionSpecConfig = {
         animation: 'timing',
         config: {
@@ -31,10 +32,11 @@ const ScheduleStack = () => {
 
             headerStyle: { backgroundColor: NavigationTheme.colors.headerBackground },
         }}>
-            <Stack.Screen name="ScheduleScreen" component={ScheduleScreen} options={{title: 'Расписание'}}/>
-            <Stack.Screen name="DaysScreen" component={DaysScreen} options={{title: 'Расписание'}}/>
+            <Stack.Screen name="ClassesScreen" component={ClassesScreen} options={{title: 'Классы'}} />
+            <Stack.Screen name="ClassAdd" component={ClassAdd} options={{title: 'Создание класса'}} />
+            {/* <Stack.Screen name="CourseScreen" component={CourseScreen} options={{title: 'Курс'}}  /> */}
         </Stack.Navigator>
     );
 };
 
-export default ScheduleStack;
+export default ClassesStack;

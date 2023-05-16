@@ -11,6 +11,8 @@ import StylesButtons from '../style/buttons';
 import StylesTexts from '../style/texts';
 import Styles from './styles'
 
+import Loading from "../Modals/Loading";
+
 import User from "../../assets/svg/user";
 
 const ProfileScreen = ({ navigation }) => {
@@ -21,6 +23,7 @@ const ProfileScreen = ({ navigation }) => {
     useEffect(() => {
         onAuthStateChanged(FIREBASE_AUTH, async user => {
             if (user) {
+                setLoading(true);
                 const docSnap = await getDoc(doc(FIREBASE_DB, 'users', user.email));
                 const docData = docSnap.data()
 
@@ -28,6 +31,7 @@ const ProfileScreen = ({ navigation }) => {
                 await AsyncStorage.setItem('currentUser', JSON.stringify(value));
                 setIsAuth(true);
                 setCurrentUser(value);
+                setLoading(false)
             } else {
                 checkAsyncStorageAuth();
             }
@@ -56,6 +60,8 @@ const ProfileScreen = ({ navigation }) => {
 
     return (
         <View style={{flex: 1}}>
+            <Loading loading={loading}/>
+
             <ScrollView style={StylesContainers.screen} contentContainerStyle={{alignItems: 'center'}}>
                 <View style={Styles.profileCardContainer}>
                     <View style={[StylesContainers.photoContainer, {width: 100, height: 100}]}>

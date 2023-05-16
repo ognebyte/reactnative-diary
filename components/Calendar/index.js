@@ -218,10 +218,10 @@ const CalendarScreen = () => {
                     {/* <View style={[StylesContainers.alert, {width: '100%', padding: 10}]}>
                         <Text style={StylesTexts.default}> {moment(selectedDay).format('D MMMM')} </Text>
                     </View> */}
-                    <View style={{flex: 1, width: '100%', height: 110 * (tasks.length + 1)}}>
+                    <View style={{flex: 1, width: '100%', height: 105 * (tasks?.length + 1)}}>
                         <FlashList
                             data={tasks}
-                            estimatedItemSize={110}
+                            estimatedItemSize={105}
                             scrollEnabled={false}
                             ListEmptyComponent={() => <Text style={[StylesContainers.alert, StylesTexts.default, {padding: 40}]}> Ничего не запланировано </Text>}
                             ItemSeparatorComponent={() => (

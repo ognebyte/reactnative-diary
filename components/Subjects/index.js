@@ -7,9 +7,10 @@ import NavigationTheme from '../style/navigation';
 import SubjectsScreen from "./SubjectsScreen";
 import SubjectScreen from "./SubjectScreen";
 
+
 const Stack = createStackNavigator();
 
-const SubjectStack = () => {
+const SubjectsStack = () => {
     const transitionSpecConfig = {
         animation: 'timing',
         config: {
@@ -37,4 +38,4 @@ const SubjectStack = () => {
     );
 };
 
-export default SubjectStack;
+export default SubjectsStack;

@@ -14,11 +14,20 @@ module.exports = function(api) {
         }
       ],
       [
-        require.resolve('babel-plugin-module-resolver'),
+        'module-resolver',
         {
-          root: ["./src"],
-        }
+          alias: {
+            assets: './assets',
+            config: './config',
+            components: './components',
+          },
+        },
       ],
-    ]
+    ],
+    env: {
+      production: {
+        plugins: ['react-native-paper/babel'],
+      },
+    },
   };
 };

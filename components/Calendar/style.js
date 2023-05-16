@@ -6,7 +6,7 @@ export default StyleSheet.create({
     },
     day: {
         width: '100%', flexDirection: 'row', alignItems: 'center',
-        height: 80, padding: 15,
+        height: 85, padding: 15,
         backgroundColor: '#ffffff',
         gap: 15
     },

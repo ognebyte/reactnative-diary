@@ -6,14 +6,21 @@ export default StyleSheet.create({
     fill: { width: '100%', height: '100%' },
     modalContainer: { flex: 1 },
     modal: {
-        alignSelf: 'flex-end',
-        justifyContent: 'space-between',
-        paddingHorizontal: 30,
-        paddingBottom: 30,
-        paddingTop: 30,
+        margin: 30,
         backgroundColor: '#ffffff',
-        borderTopLeftRadius: 10,
-        borderTopRightRadius: 10,
+        borderRadius: 10,
+        overflow: 'hidden'
+    },
+    modalHandle: {
+        alignSelf: 'center',
+        width: 50, height: 5,
+        margin: 10,
+        backgroundColor: '#B3B3B3', borderRadius: 10
+    },
+    modalButton: {
+        height: 60,
+        justifyContent: 'center',
+        paddingLeft: 20
     },
     rowSpace: {flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center'},
     column: {flexDirection: 'column', gap: 10},

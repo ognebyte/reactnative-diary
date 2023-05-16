@@ -16,6 +16,7 @@ const ProfileStack = () => {
             <Stack.Screen name="ProfileScreen" component={ProfileScreen} options={{title: 'Профиль'}} />
             <Stack.Screen name="AuthScreen" component={AuthScreen}
                 options={{
+                    title: 'Авторизация',
                     headerStyle: {backgroundColor: 'transparent'},
                     headerTitleStyle: {display: 'none'},
                 }}

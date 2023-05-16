@@ -12,11 +12,11 @@ import Setting from './Setting';
 import Profile from './Profile';
 import Calendar from './Calendar';
 
-import IconInbox from '../assets/svg/inbox';
-import IconHome from '../assets/svg/home';
-import IconCalendar from '../assets/svg/calendar';
-import IconWrench from '../assets/svg/wrench';
-import IconUser from '../assets/svg/user';
+import IconInbox from 'assets/svg/inbox';
+import IconHome from 'assets/svg/home';
+import IconCalendar from 'assets/svg/calendar';
+import IconWrench from 'assets/svg/wrench';
+import IconUser from 'assets/svg/user';
 
 const Tab = createBottomTabNavigator();
 

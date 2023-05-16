@@ -31,7 +31,6 @@ export default StyleSheet.create({
         minHeight: 45,
         paddingHorizontal: 10,
         paddingVertical: 5,
-        borderRadius: 10,
         backgroundColor: '#ffffff',
         color: '#000000',
     },

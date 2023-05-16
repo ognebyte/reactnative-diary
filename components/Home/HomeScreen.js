@@ -1,35 +1,27 @@
 import React, { useState, useEffect, useMemo, Component } from 'react';
-import { View, ImageBackground, Text, TouchableOpacity, StyleSheet, ScrollView, Dimensions, RefreshControl } from 'react-native';
+import { View, ImageBackground, Text, TouchableOpacity, StyleSheet, ScrollView, RefreshControl } from 'react-native';
 import * as SQLite from 'expo-sqlite'
 import moment from 'moment';
 
-import NavigationTheme from '../style/navigation'
 import StylesContainers from '../style/containers'
 import StylesButtons from '../style/buttons'
 import StylesTexts from '../style/texts'
+import Styles from './styles';
 
 import RecentItem from './Recent';
-
-import Psycho from '../../assets/img/psycho.png'
-
-const windowDimensions = Dimensions.get('window');
-const windowHeight = windowDimensions.height
 
 const HomeRoute = ({ navigation }) => {
     const db = SQLite.openDatabase('diary.db')
     const table = 'assignments'
-    const screenPadding = StylesContainers.screen.padding
-    let prev = ''
     const [tasks, setTasks] = useState([])
     const [loading, setLoading] = useState(true)
 
-    const refresh = React.useCallback(() => {
-        prev = ''
+    const refresh = () => {
         loadDays()
         setTimeout(() => {
             setLoading(false)
-        }, 1000)
-    }, []);
+        }, 500)
+    };
 
     useEffect(() => {
         refresh()
@@ -53,11 +45,14 @@ const HomeRoute = ({ navigation }) => {
     }
 
     return (
-        <ScrollView  refreshControl={<RefreshControl refreshing={loading} onRefresh={refresh}/>}>
+        <ScrollView refreshControl={<RefreshControl refreshing={loading} onRefresh={refresh}/>}>
             <View style={StylesContainers.default}>
-                <ImageBackground source={Psycho} style={styles.background}>
-                </ImageBackground>
-                <View style={[styles.content]}>
+                <View style={[Styles.background, {backgroundColor: StylesTexts.linkColor.color}]}>
+                    <View style={{margin: 30}}>
+                        <Text style={[StylesTexts.big, StylesTexts.lightColor]}> Сегодня: {moment().format('DD MMMM')} </Text>
+                    </View>
+                </View>
+                <View style={[Styles.content]}>
                     <View style={{gap: 20}}>
 
                         <TouchableOpacity
@@ -79,9 +74,17 @@ const HomeRoute = ({ navigation }) => {
                         <TouchableOpacity
                             activeOpacity={ 0.5 }
                             style={[StylesButtons.default, StylesButtons.buttonsDefault, {backgroundColor: '#000000'}]}
-                            onPress={() => navigation.navigate("Schedule")}
+                            onPress={() => navigation.navigate("ScheduleStack")}
                         >
                             <Text style={[StylesTexts.default, StylesTexts.lightColor]}> Расписание </Text>
+                        </TouchableOpacity>
+                        
+                        <TouchableOpacity
+                            activeOpacity={ 0.5 }
+                            style={[StylesButtons.default, StylesButtons.buttonsDefault, {backgroundColor: '#000000'}]}
+                            onPress={() => navigation.navigate("ClassesStack")}
+                        >
+                            <Text style={[StylesTexts.default, StylesTexts.lightColor]}> Курсы </Text>
                         </TouchableOpacity>
                     </View>
 
@@ -110,25 +113,3 @@ const HomeRoute = ({ navigation }) => {
 };
 
 export default HomeRoute;
-
-const styles = StyleSheet.create({
-    background: {
-        position: 'absolute',
-        alignItems: 'center',
-        top: 0,
-        width: '100%',
-        height: windowHeight / 100 * 15,
-    },
-    content: {
-        alignItems: 'center',
-        flex: 1,
-        width: '100%',
-        paddingTop: 30,
-        marginTop: windowHeight / 100 * 12,
-        gap: 40,
-        backgroundColor: NavigationTheme.colors.background,
-        borderTopLeftRadius: 30,
-        borderTopRightRadius: 30,
-        overflow: 'hidden',
-    },
-})

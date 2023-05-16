@@ -14,6 +14,7 @@ import Chevron from '../../assets/svg/chevron'
 import IconDelete from '../../assets/svg/delete';
 import IconDone from '../../assets/svg/done';
 import IconUndone from '../../assets/svg/undone';
+import Clock from '../../assets/svg/clock'
 
 const CalendarItem = (props) => {
     const item = props.item;
@@ -105,14 +106,16 @@ const CalendarItem = (props) => {
                     </TouchableOpacity>
 
                     <View style={{flex: 1}}>
-                        <View style={{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center'}}>
-                            <Text style={[StylesTexts.big, {width: '80%', flexWrap: 'nowrap'}]} numberOfLines={1}>
-                                {item.subject_title}
-                            </Text>
+                        <View style={{flexDirection: 'row', alignItems: 'center', gap: 5}}>
+                            <Clock size={18} color={StylesTexts.fadeColor.color}/>
                             <Text style={[StylesTexts.default, StylesTexts.fadeColor, {textAlign: 'right'}]}>
                                 {moment(item.subject_deadline).format('HH:mm')}
                             </Text>
                         </View>
+
+                        <Text style={[StylesTexts.medium]} numberOfLines={1}>
+                            {item.subject_title}
+                        </Text>
 
                         <Text style={[StylesTexts.small, StylesTexts.fadeColor]} numberOfLines={1}>
                             Предмет: {item.subjects_title}
