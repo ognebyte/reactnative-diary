@@ -1,5 +1,6 @@
 export default ({
     input: {
+        dark: false,
         roundness: 10,
         colors: {
             primary: 'black',
@@ -7,5 +8,5 @@ export default ({
             outline: 'transparent',
             placeholder: '#B3B3B3',
         }
-    }
+    },
 });

@@ -30,31 +30,29 @@ const AuthScreen = ({ navigation }) => {
     const [securityPassword, setSecurityPassword] = useState(true)
 
 
-    const auth = async (bool) => {
-        if(email.length > 0) {
-            if (bool) {
-                setLoading(true)
-                await signInWithEmailAndPassword(FIREBASE_AUTH, email, password)
-                .then(() => navigation.navigate('ProfileScreen'))
-                .catch(error => alert(error.message));
-                setLoading(false)
-            } else {
-                if (firstname.length === 0 && firstname.length === 0) alert('Имя или фамилия не были записаны')
-                if (password.length < 8) alert('Длина пароля меньше 8!')
-                else {
-                    setLoading(true)
-                    await createUserWithEmailAndPassword(FIREBASE_AUTH, email, password)
-                    .then(async () => {
-                        await setDoc(doc(collection(FIREBASE_DB, 'users'), email), {firstname: firstname, lastname: lastname, birthday: null});
-                        navigation.navigate('ProfileScreen');
-                    })
-                    .catch(error => alert(error.message));
-                    setLoading(false)
-                }
-            }
+    const auth = async (isAuth) => {
+        if(email.length === 0) return alert("Введите почту")
+        
+        if (isAuth) {
+            setLoading(true)
+            await signInWithEmailAndPassword(FIREBASE_AUTH, email, password)
+            .then(() => navigation.navigate('ProfileScreen'))
+            .catch(error => alert(error.message));
+            setLoading(false)
         } else {
-            alert("Введите почту")
+            if (firstname.length === 0 && firstname.length === 0) return alert('Имя или фамилия не были записаны')
+            if (password.length < 8) return alert('Длина пароля меньше 8!')
+
+            setLoading(true)
+            await createUserWithEmailAndPassword(FIREBASE_AUTH, email, password)
+            .then(async () => {
+                await setDoc(doc(collection(FIREBASE_DB, 'users'), email), {firstname: firstname, lastname: lastname, birthday: null});
+                navigation.navigate('ProfileScreen');
+            })
+            .catch(error => alert(error.message));
+            setLoading(false)
         }
+            
     }
     
     const resetPassword = async () => {
@@ -89,6 +87,7 @@ const AuthScreen = ({ navigation }) => {
                                 <TextInput
                                     inputMode="text"
                                     placeholder="Фамилия"
+                                    blurOnSubmit={false}
                                     onSubmitEditing={() => inputLastname.current.focus()}
                                     returnKeyType={forgotPassword ? 'done' : 'next'}
                                     value={firstname}
@@ -101,6 +100,7 @@ const AuthScreen = ({ navigation }) => {
                                     ref={inputLastname}
                                     inputMode="text"
                                     placeholder="Имя"
+                                    blurOnSubmit={false}
                                     onSubmitEditing={() => inputEmail.current.focus()}
                                     returnKeyType={forgotPassword ? 'done' : 'next'}
                                     value={lastname}
@@ -115,6 +115,7 @@ const AuthScreen = ({ navigation }) => {
                             ref={inputEmail}
                             inputMode="email"
                             placeholder="Электронная почта"
+                            blurOnSubmit={false}
                             onSubmitEditing={() => forgotPassword ? resetPassword() : inputPassword.current.focus()}
                             returnKeyType={forgotPassword ? 'done' : 'next'}
                             value={email}
@@ -132,6 +133,7 @@ const AuthScreen = ({ navigation }) => {
                                         secureTextEntry={securityPassword}
                                         inputMode="text"
                                         placeholder="Пароль"
+                                        blurOnSubmit={false}
                                         onSubmitEditing={() => auth(isLogIn ? true : false)}
                                         returnKeyType={'done'}
                                         value={password}

@@ -55,7 +55,7 @@ const ModalAdd = (props) => {
         >
             <View>
                 <ScrollView contentContainerStyle={{paddingTop: 150}}>
-                    <View style={StylesContainers.modal}>
+                    <View style={[StylesContainers.modal, {padding: 30}]}>
                         <View style={{gap: 30}}>
                             <Text style={StylesTexts.big}>
                                 Создание новой записи

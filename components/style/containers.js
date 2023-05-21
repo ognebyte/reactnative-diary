@@ -2,11 +2,11 @@ import { StyleSheet } from 'react-native';
 
 export default StyleSheet.create({
     default: { alignItems: 'center', justifyContent: 'center', flex: 1, },
-    screen: { padding: 30 },
+    screen: { padding: 15 },
     fill: { width: '100%', height: '100%' },
     modalContainer: { flex: 1 },
     modal: {
-        margin: 30,
+        margin: 15,
         backgroundColor: '#ffffff',
         borderRadius: 10,
         overflow: 'hidden'
@@ -34,5 +34,11 @@ export default StyleSheet.create({
     photoContainer: {
         justifyContent: 'center', alignItems: 'center',
         borderRadius: 100, backgroundColor: 'white',
+    },
+    scrollViewContainer: {
+        paddingTop: 15, paddingBottom: 100
+    },
+    flashListItemContainer: {
+        marginBottom: 30
     }
 });

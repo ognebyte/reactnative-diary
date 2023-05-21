@@ -7,9 +7,9 @@ import StylesTexts from '../style/texts';
 
 import HomeScreen from './HomeScreen';
 import Notes from '../Notes';
-import SubjectsStack from 'components/Subjects'
-import ScheduleStack from 'components/Schedule'
-import ClassesStack from 'components/Classes'
+import SubjectsStack from '../Subjects'
+import ScheduleStack from '../Schedule'
+import ClassesStack from '../Classes'
 
 const Stack = createStackNavigator();
 

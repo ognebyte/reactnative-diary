@@ -31,6 +31,13 @@ export default StyleSheet.create({
         backgroundColor: '#fff',
     },
     bottom: { height: 45 },
+    buttonFloat: {
+        position: 'absolute',
+        right: 0, bottom: 0,
+        margin: 30,
+        borderRadius: 100,
+        zIndex: 1000,
+    },
     
     edit: { backgroundColor: '#E0E2FF' },
     delete: { backgroundColor: '#FF9898' },

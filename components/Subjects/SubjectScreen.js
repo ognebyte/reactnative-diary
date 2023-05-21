@@ -1,5 +1,4 @@
 import React, { useState, useRef, useEffect } from "react";
-import * as SQLite from 'expo-sqlite'
 import 'react-native-gesture-handler';
 import { View, StyleSheet, Dimensions, StatusBar } from 'react-native';
 import { TabView, TabBar, SceneMap } from 'react-native-tab-view';
@@ -13,10 +12,8 @@ import Users from "./Users";
 
 
 const SubjectScreen = ({ route, navigation }) => {
-    const db = SQLite.openDatabase('diary.db')
     const subjectId = route.params.subjectId
     const subjectTitle = route.params.subjectTitle
-    // const createdBy = route.params.createdBy
 
     const [load, setLoad] = useState(false)
     const screens = {
@@ -29,7 +26,6 @@ const SubjectScreen = ({ route, navigation }) => {
     
     useEffect(
         () => {
-            // if (createdBy) screens.routes.push({ key: 'third', title: ' Пользователи ' })
             navigation.setOptions({ headerTitle: subjectTitle })
         }, []
     )
@@ -42,7 +38,6 @@ const SubjectScreen = ({ route, navigation }) => {
                 first: () => <Assignments subjectId={subjectId}/>,
                 second: () => <Report subjectId={subjectId} load={load}/>,
             })}
-            // third: () => <Users subjectId={subjectId}/>,
             initialLayout={{ width: Dimensions.get('window').width }}
             onIndexChange={ index => {setLoad(!load); screens.index = index}}
             renderTabBar={ props => <TabBar {...props}

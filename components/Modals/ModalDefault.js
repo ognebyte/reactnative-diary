@@ -4,12 +4,12 @@ import { View } from 'react-native';
 
 import StylesContainers from '../style/containers'
 
-const ModalDefault = ({modal, setModal, content}) => {
+const ModalDefault = ({modal, hideModal, content}) => {
     return (
         <Modal isVisible={modal} swipeDirection={'down'}
-            onSwipeComplete={setModal}
-            onBackdropPress={setModal}
-            onBackButtonPress={setModal}
+            onSwipeComplete={hideModal}
+            onBackdropPress={hideModal}
+            onBackButtonPress={hideModal}
             backdropOpacity={0.5}
             style={{justifyContent: 'flex-end', margin: 0}}
         >
