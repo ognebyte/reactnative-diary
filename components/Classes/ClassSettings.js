@@ -5,7 +5,6 @@ import { View, Text, ScrollView, Switch, Alert } from 'react-native';
 import { TextInput, Button, TouchableRipple } from 'react-native-paper';
 import * as Clipboard from 'expo-clipboard';
 
-import NavigationTheme from '../style/navigation';
 import StylesContainers from '../style/containers'
 import StylesButtons from '../style/buttons'
 import StylesTexts from '../style/texts'
@@ -18,10 +17,15 @@ import IconClipboard from 'assets/svg/clipboard'
 
 
 const ClassSettings = ({ navigation }) => {
-    const { contextSubject, updateContextSubject } = useContext(Context);
+    const {
+        contextSubject,
+        updateContextSubject,
+        contextCurrentUser,
+        updateContextCurrentUser,
+        checkUserAccess
+    } = useContext(Context);
 
     const [loading, setLoading] = useState(false)
-    const [alertDelete, setAlertDelete] = useState(false)
     const [className, setClassName] = useState(contextSubject.name)
     const [classDescription, setClassDescription] = useState(contextSubject.description)
     const [canJoin, setCanJoin] = useState(contextSubject.canJoin)
@@ -29,24 +33,30 @@ const ClassSettings = ({ navigation }) => {
 
     const saveClass = async () => {
         setLoading(true)
-        var value = {
-            name: className,
-            description: classDescription,
-            canJoin: canJoin
+        try {
+            if (!(await checkUserAccess())) throw Error('Нет доступа!')
+            var value = {
+                name: className,
+                description: classDescription,
+                canJoin: canJoin
+            }
+            await updateDoc(doc(FIREBASE_DB, 'subjects', contextSubject.id), value);
+            updateContextSubject(Object.assign({}, contextSubject, value));
+        } catch (error) {
+            alert(error);
         }
-        await updateDoc(doc(FIREBASE_DB, 'subjects', contextSubject.id), value);
-        updateContextSubject(Object.assign({}, contextSubject, value));
         setLoading(false)
     }
 
     const deleteClass = async () => {
         setLoading(true)
         try {
+            if (!(await checkUserAccess())) throw Error('Нет доступа!')
             const q = query(collection(FIREBASE_DB, 'members'), where('subjectId', '==', contextSubject.id));
             const querySnapshot = await getDocs(q);
             
             querySnapshot.forEach(async (doc) => {
-              await deleteDoc(doc.ref);
+                await deleteDoc(doc.ref);
             });
             await deleteDoc(doc(collection(FIREBASE_DB, 'subjects'), contextSubject.id))
             navigation.navigate('ClassesScreen', { update: true })

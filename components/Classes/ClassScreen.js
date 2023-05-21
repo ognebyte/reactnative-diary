@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useContext } from "react";
+import React, { useEffect, useState, useMemo, useContext } from "react";
 import { View, Dimensions } from 'react-native';
 import { doc, getDoc, updateDoc } from 'firebase/firestore';
 import { FIREBASE_AUTH, FIREBASE_DB } from 'config/firebase'
@@ -11,8 +11,8 @@ import StylesTexts from '../style/texts'
 
 import Context from 'config/context';
 import Loading from '../Modals/Loading'
-import Assignments from './Assignments'
-import Members from './Members'
+import AssignmentsScreen from './AssignmentsScreen'
+import MembersScreen from './MembersScreen'
 
 import IconSettings from 'assets/svg/settings'
 import IconRefresh from 'assets/svg/refresh'
@@ -21,7 +21,6 @@ import IconRefresh from 'assets/svg/refresh'
 const ClassScreen = ({ navigation }) => {
     const { contextSubject, updateContextSubject } = useContext(Context);
 
-    const [subject, setSubject] = useState(contextSubject)
     const [loading, setLoading] = useState(false)
 
     const screens = {
@@ -31,7 +30,7 @@ const ClassScreen = ({ navigation }) => {
             { key: 'second', title: ' Участники ' },
         ],
     };
-    
+
     useEffect(() => {
         navigation.setOptions({
             title: contextSubject.name,
@@ -48,7 +47,7 @@ const ClassScreen = ({ navigation }) => {
                         />
                     }
                     <IconButton icon={IconRefresh}
-                        onPress={() => refresh()}
+                        onPress={refresh}
                     />
                 </View>
             )
@@ -57,11 +56,14 @@ const ClassScreen = ({ navigation }) => {
 
     const refresh = async () => {
         setLoading(true)
-        const docSnap = await getDoc(doc(FIREBASE_DB, 'subjects', subject.id))
-        var docData = Object.assign({}, ...contextSubject, docSnap.data())
-        setSubject(docData)
+        const docSnap = await getDoc(doc(FIREBASE_DB, 'subjects', contextSubject.id))
+        var docData = Object.assign({}, contextSubject, docSnap.data())
         updateContextSubject(docData)
         setLoading(false)
+    }
+
+    const navigate = (screen, params) => {
+        navigation.navigate(screen, params);
     }
 
 
@@ -71,12 +73,16 @@ const ClassScreen = ({ navigation }) => {
             <TabView
                 swipeEnabled={true}
                 navigationState={screens}
-                renderScene={SceneMap({
-                    first: () => <Assignments/>,
-                    second: () => <Members/>,
-                })}
+                renderScene={useMemo(
+                    () =>
+                        SceneMap({
+                            first: () => <AssignmentsScreen navigate={navigate}/>,
+                            second: () => <MembersScreen/>,
+                        })
+                    , [])
+                }
                 initialLayout={{ width: Dimensions.get('window').width }}
-                onIndexChange={ index => screens.index = index}
+                onIndexChange={ index => screens.index = index }
                 renderTabBar={ props =>
                     <TabBar {...props}
                         style={{

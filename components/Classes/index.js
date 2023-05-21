@@ -1,5 +1,8 @@
 import React, { useState } from "react";
 import { CardStyleInterpolators, createStackNavigator } from "@react-navigation/stack";
+import { doc, getDocs, getDoc, collection, query, where } from 'firebase/firestore';
+import { FIREBASE_DB } from 'config/firebase'
+
 import { Easing, Text } from 'react-native';
 
 import NavigationTheme from '../style/navigation';
@@ -9,15 +12,38 @@ import Context from 'config/context';
 import ClassesScreen from "./ClassesScreen";
 import ClassScreen from './ClassScreen'
 import ClassSettings from './ClassSettings'
+import ClassAdd from './ClassAdd'
+import AssignmentAdd from './AssignmentAdd'
+import AssignmentScreen from './AssignmentScreen'
 
 const Stack = createStackNavigator();
 
 const ClassesStack = () => {
     const [contextSubject, setContextSubject] = useState({});
+    const [contextCurrentUser, setContextCurrentUser] = useState({});
 
-    const updateContextSubject = (value) => {
-        setContextSubject(value)
-    };
+    const updateContextSubject = (value) => setContextSubject(value)
+    const updateContextCurrentUser = (value) => setContextCurrentUser(value)
+    const checkUserAccess = async () => {
+        const membersCollectionRef = collection(FIREBASE_DB, 'members');
+        const q = query(membersCollectionRef,
+            where('subjectId', '==', contextSubject.id),
+            where('userId', '==', contextCurrentUser.email)
+        );
+        const querySnapshot = await getDocs(q);
+        if (!querySnapshot.empty) {
+            if (querySnapshot.docs[0].data().role !== 'pupil') return true
+        }
+        return false
+    }
+
+    const contextValue = {
+        contextSubject,
+        updateContextSubject,
+        contextCurrentUser,
+        updateContextCurrentUser,
+        checkUserAccess
+    }
 
     const transitionSpecConfig = {
         animation: 'timing',
@@ -28,7 +54,7 @@ const ClassesStack = () => {
     };
 
     return (
-        <Context.Provider value={{ contextSubject, updateContextSubject }}>
+        <Context.Provider value={contextValue}>
             <Stack.Navigator screenOptions={{
                 gestureEnabled: true,
                 gestureDirection: 'horizontal',
@@ -42,8 +68,11 @@ const ClassesStack = () => {
                 headerStyle: { backgroundColor: NavigationTheme.colors.headerBackground },
             }}>
                 <Stack.Screen name="ClassesScreen" component={ClassesScreen} options={{title: 'Классы'}} />
+                <Stack.Screen name="ClassAdd" component={ClassAdd} options={{title: 'Создание класса'}} />
                 <Stack.Screen name="ClassScreen" component={ClassScreen} options={{title: 'Класс'}} />
                 <Stack.Screen name="ClassSettings" component={ClassSettings} options={{title: 'Настройки'}} />
+                <Stack.Screen name="AssignmentAdd" component={AssignmentAdd} options={{title: 'Создание задания'}} />
+                <Stack.Screen name="AssignmentScreen" component={AssignmentScreen} options={{headerTitleStyle: {display: 'none'}}} />
             </Stack.Navigator>
         </Context.Provider>
     );

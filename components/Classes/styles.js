@@ -8,4 +8,15 @@ export default StyleSheet.create({
         backgroundColor: '#ffffff',
         borderRadius: 10
     },
+    assignmentItemContainer: {
+        flexDirection: 'row',
+        width: '100%', height: 100,
+        padding: 10,
+        backgroundColor: 'white', borderRadius: 10,
+    },
+    assignmentHeader: {
+        gap: 30, backgroundColor: 'white',
+        borderBottomLeftRadius: 15, borderBottomRightRadius: 15,
+        elevation: 2
+    }
 });

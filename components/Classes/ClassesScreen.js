@@ -12,24 +12,29 @@ import StylesTexts from '../style/texts'
 import StylesPaper from '../style/paper'
 
 import Context from 'config/context';
-import ClassesItem from "./ClassesItem";
+import ClassItem from "./ClassItem";
 import ModalEdit from '../Modals/ModalEdit'
 import ModalDefault from '../Modals/ModalDefault'
 import Loading from "../Modals/Loading";
 
 import IconPlus from 'assets/svg/plus'
+import IconUserGroup from 'assets/svg/user-group'
+import IconAddToList from 'assets/svg/add-to-list'
 
 
 const ClassesScreen = ({ route, navigation }) => {
-    const { contextSubject, updateContextSubject } = useContext(Context);
+    const {
+        contextSubject,
+        updateContextSubject,
+        contextCurrentUser,
+        updateContextCurrentUser
+    } = useContext(Context);
     const [loading, setLoading] = useState(false)
     const [modalMore, setModalMore] = useState(false)
-    const [modalAdd, setModalAdd] = useState({show: false, isCreate: false})
+    const [modalJoin, setModalJoin] = useState(false)
     
     const [subjects, setSubjects] = useState([])
-    const [className, setClassName] = useState('')
-    const [classDescription, setClassDescription] = useState('')
-    const [currentUser, setCurrentUser] = useState(null)
+    const [classCode, setClassCode] = useState('')
     
     useEffect(() => {
         refresh()
@@ -69,7 +74,7 @@ const ClassesScreen = ({ route, navigation }) => {
         let item = await AsyncStorage.getItem('currentUser')
         if (item !== null) {
             let value = JSON.parse(item)
-            setCurrentUser(value)
+            updateContextCurrentUser(value)
             return value.email
         }
         return null
@@ -99,60 +104,39 @@ const ClassesScreen = ({ route, navigation }) => {
         setSubjects(subjectData);
     }
 
-    const createClass = async () => {
-        if (className.length === 0) return alert('Введите название класса!')
+    const joinClass = async () => {
+        if (classCode.length === 0) return alert('Введите название класса!')
         setLoading(true)
         try {
-            if (modalAdd.isCreate) {
-                let currentDate = new Date();
-                const subjectRef = await addDoc(
-                    collection(FIREBASE_DB, 'subjects'), {
-                        name: className,
-                        description: null,
-                        createdBy: currentUser.email,
-                        createdAt: currentDate,
-                        canJoin: true
-                    }
-                );
-                await addDoc(
-                    collection(FIREBASE_DB, 'members'), {
-                        subjectId: subjectRef.id,
-                        userId: currentUser.email,
-                        role: 'admin',
-                        joined: currentDate
-                    }
-                );
-            } else {
-                const subjectDocSnapshot = await getDoc(doc(FIREBASE_DB, 'subjects', className))
+            const subjectDocSnapshot = await getDoc(doc(FIREBASE_DB, 'subjects', classCode))
 
-                if (!subjectDocSnapshot.exists()) throw Error('Класс с таким кодом не найдено')
+            if (!subjectDocSnapshot.exists()) throw Error('Класс с таким кодом не найдено')
+            else {
+                if (!subjectDocSnapshot.data().canJoin) throw Error('Класс с таким кодом не найдено')
+                const membersCollectionRef = collection(FIREBASE_DB, 'members');
+                const q = query(
+                    membersCollectionRef,
+                    where('subjectId', '==', classCode),
+                    where('userId', '==', contextCurrentUser.email)
+                );
+                const querySnapshot = await getDocs(q);
+                if (!querySnapshot.empty) throw Error('Вы уже были записаны на этот класс')
                 else {
-                    if (!subjectDocSnapshot.data().canJoin) throw Error('Класс с таким кодом не найдено')
-                    const membersCollectionRef = collection(FIREBASE_DB, 'members');
-                    const q = query(
-                        membersCollectionRef,
-                        where('subjectId', '==', className),
-                        where('userId', '==', currentUser.email)
-                    );
-                    const querySnapshot = await getDocs(q);
-                    if (!querySnapshot.empty) throw Error('Вы уже были записаны на этот класс')
-                    else {
-                        await addDoc(membersCollectionRef, {
-                            subjectId: className,
-                            userId: currentUser.email,
-                            role: 'pupil',
-                            joined: new Date()
-                        });
-                    }
+                    await addDoc(membersCollectionRef, {
+                        subjectId: classCode,
+                        userId: contextCurrentUser.email,
+                        role: 'pupil',
+                        joined: new Date()
+                    });
                 }
             }
-            setModalAdd({show: false, isCreate: false})
+            setModalJoin(false)
         } catch (e) {
             setLoading(false)
             return alert(e);
         }
         refresh()
-        setClassName('')
+        setClassCode('')
     }
 
 
@@ -168,44 +152,49 @@ const ClassesScreen = ({ route, navigation }) => {
             <ModalDefault modal={modalMore} hideModal={() => setModalMore(false)}
                 content={
                     <>
-                        <TouchableOpacity activeOpacity={0.5} style={StylesContainers.modalButton}
-                            onPress={() => {setModalMore(false); setModalAdd({show: true, isCreate: true})}}
+                        <TouchableRipple style={StylesContainers.modalButton}
+                            onPress={() => {setModalMore(false); navigation.navigate('ClassAdd')}}
                         >
-                            <Text style={StylesTexts.default}> Создать </Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity activeOpacity={0.5} style={StylesContainers.modalButton}
-                            onPress={() => {setModalMore(false); setModalAdd({show: true, isCreate: false})}}
+                            <View style={StylesContainers.modalButtonWithIcon}>
+                                <IconAddToList size={25}/>
+                                <Text style={StylesTexts.default}> Создать </Text>
+                            </View>
+                        </TouchableRipple>
+                        <TouchableRipple style={StylesContainers.modalButton}
+                            onPress={() => {setModalMore(false); setModalJoin(true)}}
                         >
-                            <Text style={StylesTexts.default}> Присоединиться </Text>
-                        </TouchableOpacity>
+                            <View style={StylesContainers.modalButtonWithIcon}>
+                                <IconUserGroup size={25}/>
+                                <Text style={StylesTexts.default}> Присоединиться </Text>
+                            </View>
+                        </TouchableRipple>
                     </>
                 }
             />
-            <ModalDefault modal={modalAdd.show} hideModal={() => setModalAdd({show: false, isCreate: false})}
+            <ModalDefault modal={modalJoin} hideModal={() => setModalJoin(false)}
                 content={
                     <View style={{gap: 15}}>
                         <TextInput mode="outlined"
                             inputMode="text"
-                            label={modalAdd.isCreate ? "Название класса" : "Код класса"}
-                            value={className}
-                            onChangeText={(v) => setClassName(v)}
+                            label={"Код класса"}
+                            value={classCode}
+                            onChangeText={(v) => setClassCode(v)}
                             maxLength={50}
                             style={[StylesTexts.default, {margin: 15}]}
                             theme={StylesPaper.input}
                             selectionColor={StylesButtons.activeBack.backgroundColor}
-                            right={!modalAdd.isCreate ? null : <TextInput.Affix text={`${className.length}/50`}/>}
                         />
-                        <TouchableRipple onPress={createClass}
+                        <TouchableRipple onPress={joinClass}
                             style={{alignItems: 'center', padding: 15, backgroundColor: StylesButtons.active.backgroundColor}}
                         >
-                            <Text style={[StylesTexts.header]}> {modalAdd.isCreate ? 'Создать' : 'Присоединиться'} </Text>
+                            <Text style={[StylesTexts.header]}> Присоединиться </Text>
                         </TouchableRipple>
                     </View>
                 }
             />
 
-            <Button mode='contained' style={{width: 200, marginTop: 10, alignSelf: 'center'}} onPress={() => disableNetwork(FIREBASE_DB)}>disableNetwork</Button>
-            <Button mode='contained' style={{width: 200, marginTop: 10, alignSelf: 'center'}} onPress={() => enableNetwork(FIREBASE_DB)}>enableNetwork</Button>
+            {/* <Button mode='contained' style={{width: 200, marginTop: 10, alignSelf: 'center'}} onPress={() => disableNetwork(FIREBASE_DB)}>disableNetwork</Button>
+            <Button mode='contained' style={{width: 200, marginTop: 10, alignSelf: 'center'}} onPress={() => enableNetwork(FIREBASE_DB)}>enableNetwork</Button> */}
             
             <FlashList
                 data={subjects}
@@ -227,7 +216,7 @@ const ClassesScreen = ({ route, navigation }) => {
                             }}
                             style={StylesContainers.flashListItemContainer}
                         >
-                            <ClassesItem item={item}/>
+                            <ClassItem item={item}/>
                         </TouchableOpacity>
                     )
                 }

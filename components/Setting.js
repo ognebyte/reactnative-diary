@@ -1,7 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import * as SQLite from 'expo-sqlite'
 import { View, Text, TouchableOpacity, ScrollView } from 'react-native';
-import AwesomeAlert from 'react-native-awesome-alerts';
 
 import StylesContainers from './style/containers';
 import StylesButtons from './style/buttons';
@@ -14,7 +13,6 @@ import * as DocumentPicker from 'expo-document-picker';
 import { Platform } from 'react-native';
 
 const Setting = () => {
-    const [showAlertDropTable, setShowAlertDropTable] = useState(false)
     const [db, setDb] = useState(SQLite.openDatabase('diary.db'))
     const tables = ['notes', 'subjects', 'assignments', 'schedule', 'days']
     
@@ -139,29 +137,6 @@ const Setting = () => {
                     }
                 </View>
             </ScrollView>
-
-            <AwesomeAlert
-                show={showAlertDropTable}
-                title=" Внимание "
-                message=" Вы уверены что хотите удалить все данные? "
-                cancelText=" Нет "
-                confirmText=" Да "
-                confirmButtonTextStyle={{color: '#000000'}}
-                cancelButtonStyle={{width: 50, alignItems: 'center'}}
-                confirmButtonStyle={{width: 50, alignItems: 'center'}}
-                closeOnTouchOutside={false}
-                closeOnHardwareBackPress={false}
-                showCancelButton={true}
-                showConfirmButton={true}
-                confirmButtonColor={StylesButtons.delete.backgroundColor}
-                onCancelPressed={() => {
-                    setShowAlertDropTable(false)
-                }}
-                onConfirmPressed={() => {
-                    dropTable(tableNotes)
-                    setShowAlertDropTable(false)
-                }}
-            />
         </View>
     );
 };

@@ -22,6 +22,11 @@ export default StyleSheet.create({
         justifyContent: 'center',
         paddingLeft: 20
     },
+    modalButtonWithIcon: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 10
+    },
     rowSpace: {flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center'},
     column: {flexDirection: 'column', gap: 10},
     alert: {
