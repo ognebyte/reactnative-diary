@@ -22,7 +22,8 @@ const ClassSettings = ({ navigation }) => {
         updateContextSubject,
         contextCurrentUser,
         updateContextCurrentUser,
-        checkUserAccess
+        checkUserAccess,
+        clearCollection
     } = useContext(Context);
 
     const [loading, setLoading] = useState(false)
@@ -52,18 +53,15 @@ const ClassSettings = ({ navigation }) => {
         setLoading(true)
         try {
             if (!(await checkUserAccess())) throw Error('Нет доступа!')
-            const q = query(collection(FIREBASE_DB, 'members'), where('subjectId', '==', contextSubject.id));
-            const querySnapshot = await getDocs(q);
-            
-            querySnapshot.forEach(async (doc) => {
-                await deleteDoc(doc.ref);
-            });
-            await deleteDoc(doc(collection(FIREBASE_DB, 'subjects'), contextSubject.id))
+            setLoading(false)
             navigation.navigate('ClassesScreen', { update: true })
+            await clearCollection('members')
+            await clearCollection('comments')
+            await clearCollection('assignments')
+            await deleteDoc(doc(collection(FIREBASE_DB, 'subjects'), contextSubject.id))
         } catch (error) {
             alert(error);
         }
-        setLoading(false)
     }
 
     return (

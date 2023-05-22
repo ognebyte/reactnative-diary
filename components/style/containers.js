@@ -33,7 +33,7 @@ export default StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         textAlign: 'center',
-        backgroundColor: '#ffffff90',
+        backgroundColor: '#00000010',
         borderRadius: 10,
     },
     photoContainer: {
@@ -45,5 +45,5 @@ export default StyleSheet.create({
     },
     flashListItemContainer: {
         marginBottom: 30
-    }
+    },
 });

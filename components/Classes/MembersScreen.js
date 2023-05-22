@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from "react";
-import { doc, updateDoc, getDocs, getDoc, deleteDoc, collection, query, where } from 'firebase/firestore';
+import { doc, updateDoc, getDocs, getDoc, deleteDoc, collection, query, where, orderBy, onSnapshot } from 'firebase/firestore';
 import { FIREBASE_DB } from 'config/firebase'
 import { View, Text, TouchableOpacity, RefreshControl, ScrollView } from 'react-native';
 import { TextInput, TouchableRipple, IconButton, Button } from 'react-native-paper';
@@ -37,7 +37,32 @@ const MembersScreen = () => {
     const [selectedMember, setSelectedMember] = useState('')
 
     useEffect(() => {
-        refresh()
+        const membersRef = collection(FIREBASE_DB, 'members');
+        const membersCommentsQuery = query(
+            membersRef,
+            where('subjectId', '==', contextSubject.id)
+        );
+
+        const unsubscribe = onSnapshot(membersCommentsQuery, async (snapshot) => {
+            const dataPupils = []
+            const dataTeachers = []
+            const dataMembers = [];
+            snapshot.docs.forEach(doc => {
+                dataMembers.push(doc.data());
+            });
+            await Promise.all(dataMembers.map(async (member) => {
+                const docSnap = await getDoc(doc(FIREBASE_DB, 'users', member.userId));
+                var value = Object.assign(docSnap.data(), member)
+                member.role == 'pupil' ? dataPupils.push(value) : dataTeachers.push(value)
+            }));
+            setPupils(dataPupils);
+            setTeachers(dataTeachers)
+        });
+
+        return () => {
+            // Отписываемся от подписки при размонтировании компонента
+            unsubscribe();
+        };
     }, [])
 
     const refresh = async () => {
@@ -55,7 +80,7 @@ const MembersScreen = () => {
             collection(FIREBASE_DB, 'members'),
             where('subjectId', '==', contextSubject.id)
         ));
-        const dataInstructors = [];
+        const dataTeachers = [];
         const dataPupils = [];
         const dataMembers = [];
         querySnapshot.forEach(doc => {
@@ -64,17 +89,17 @@ const MembersScreen = () => {
         await Promise.all(dataMembers.map(async (member) => {
             const docSnap = await getDoc(doc(FIREBASE_DB, 'users', member.userId));
             var value = Object.assign(docSnap.data(), member)
-            member.role == 'pupil' ? dataPupils.push(value) : dataInstructors.push(value)
+            member.role == 'pupil' ? dataPupils.push(value) : dataTeachers.push(value)
         }));
 
-        setTeachers(dataInstructors)
+        setTeachers(dataTeachers)
         setPupils(dataPupils)
     }
 
     const memberItem = (member) => {
         return (
             <View key={member.userId} style={[Styles.memberItem]}>
-                <Text style={StylesTexts.default}>
+                <Text style={StylesTexts.default} numberOfLines={1}>
                     {member.firstname} {member.lastname}
                 </Text>
                 { contextSubject.role !== 'admin' || contextCurrentUser.email === member.userId ? null :

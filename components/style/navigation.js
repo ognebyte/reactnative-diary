@@ -5,7 +5,7 @@ export default ({
         primary: 'rgb(255, 45, 85)',
         notification: 'rgb(255, 69, 58)',
         border: 'transparent',
-        background: '#f3f3f3',
+        background: '#ffffff', // f3f3f3
         headerBackground: '#ffffff',
         card: '#ffffff',
         text: '#000',

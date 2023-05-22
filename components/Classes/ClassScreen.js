@@ -62,9 +62,7 @@ const ClassScreen = ({ navigation }) => {
         setLoading(false)
     }
 
-    const navigate = (screen, params) => {
-        navigation.navigate(screen, params);
-    }
+    const navigate = (screen, params) => navigation.navigate(screen, params)
 
 
     return (

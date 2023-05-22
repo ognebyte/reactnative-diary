@@ -13,19 +13,18 @@ import IconMore from 'assets/svg/more-vertical'
 
 
 const AssignmentItem = ({ item }) => {
-    const convertToTime = (value) => ((value.seconds * 1000) + (value.nanoseconds / 1000000))
 
     return (
-        <View style={Styles.assignmentItemContainer}>
+        <View style={Styles.assignmentItem}>
             <View style={{flex: 1, justifyContent: 'space-between'}}>
                 <Text style={StylesTexts.big}>
                     {item.title}
                 </Text>
                 <Text style={StylesTexts.small}>
                     {item.dueDate ?
-                    `Срок сдачи: ${moment(convertToTime(item.dueDate)).format('DD MMMM')}`
+                    `Срок сдачи: ${moment(item.dueDate).format('DD MMMM')}`
                     :
-                    `Создан: ${moment(convertToTime(item.createdAt)).format('DD MMMM')}`
+                    `Создан: ${moment(item.createdAt).format('DD MMMM')}`
                     }
                 </Text>
             </View>

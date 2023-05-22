@@ -19,7 +19,7 @@ export default StyleSheet.create({
     },
     small: {
         fontSize: 14,
-        fontWeight: '400',
+        fontWeight: '200',
     },
     lightColor: { color: "#ffffff" },
     linkColor: { color: '#6E7AFF' },
@@ -33,6 +33,13 @@ export default StyleSheet.create({
         paddingVertical: 5,
         backgroundColor: '#ffffff',
         color: '#000000',
+    },
+    inputMessage: {
+        maxHeight: 100,
+        paddingVertical: 10,
+        paddingHorizontal: 15,
+        borderRadius: 30,
+        backgroundColor: '#f3f3f3',
     },
     inputTitle: {
         color: '#000000',

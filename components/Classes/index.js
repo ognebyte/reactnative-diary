@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { CardStyleInterpolators, createStackNavigator } from "@react-navigation/stack";
-import { doc, getDocs, getDoc, collection, query, where } from 'firebase/firestore';
+import { doc, getDocs, deleteDoc, collection, query, where } from 'firebase/firestore';
 import { FIREBASE_DB } from 'config/firebase'
 
 import { Easing, Text } from 'react-native';
@@ -15,6 +15,7 @@ import ClassSettings from './ClassSettings'
 import ClassAdd from './ClassAdd'
 import AssignmentAdd from './AssignmentAdd'
 import AssignmentScreen from './AssignmentScreen'
+import AssignmentSettings from './AssignmentSettings'
 
 const Stack = createStackNavigator();
 
@@ -24,6 +25,7 @@ const ClassesStack = () => {
 
     const updateContextSubject = (value) => setContextSubject(value)
     const updateContextCurrentUser = (value) => setContextCurrentUser(value)
+
     const checkUserAccess = async () => {
         const membersCollectionRef = collection(FIREBASE_DB, 'members');
         const q = query(membersCollectionRef,
@@ -37,12 +39,21 @@ const ClassesStack = () => {
         return false
     }
 
+    const clearCollection = async (collectionName) => {
+        const q = query(collection(FIREBASE_DB, collectionName), where('subjectId', '==', contextSubject.id));
+        const querySnapshot = await getDocs(q);
+        querySnapshot.forEach(async (doc) => {
+            await deleteDoc(doc.ref);
+        });
+    }
+
     const contextValue = {
         contextSubject,
         updateContextSubject,
         contextCurrentUser,
         updateContextCurrentUser,
-        checkUserAccess
+        checkUserAccess,
+        clearCollection
     }
 
     const transitionSpecConfig = {
@@ -73,6 +84,7 @@ const ClassesStack = () => {
                 <Stack.Screen name="ClassSettings" component={ClassSettings} options={{title: 'Настройки'}} />
                 <Stack.Screen name="AssignmentAdd" component={AssignmentAdd} options={{title: 'Создание задания'}} />
                 <Stack.Screen name="AssignmentScreen" component={AssignmentScreen} options={{headerTitleStyle: {display: 'none'}}} />
+                <Stack.Screen name="AssignmentSettings" component={AssignmentSettings} options={{headerTitleStyle: {display: 'none'}}} />
             </Stack.Navigator>
         </Context.Provider>
     );

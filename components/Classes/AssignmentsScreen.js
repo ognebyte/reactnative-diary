@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useContext } from "react";
 import { useNavigation } from '@react-navigation/native';
 import { FlashList } from "@shopify/flash-list";
-import { doc, addDoc, getDocs, getDoc, collection, query, where, disableNetwork, enableNetwork } from 'firebase/firestore';
+import { doc, addDoc, getDocs, onSnapshot, collection, query, where, orderBy } from 'firebase/firestore';
 import { FIREBASE_DB } from 'config/firebase'
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { View, Text, TouchableOpacity, RefreshControl } from 'react-native';
@@ -23,15 +23,39 @@ import IconPlus from 'assets/svg/plus'
 
 
 const AssignmentsScreen = ({ navigate }) => {
-    const navigation = useNavigation();
     const { contextSubject } = useContext(Context);
 
     const [loading, setLoading] = useState(false)
     
     const [assignments, setAssignments] = useState([])
     
+    const convertToTime = (value) => ((value.seconds * 1000) + (value.nanoseconds / 1000000));
+
     useEffect(() => {
-        refresh()
+        const assignmentsRef = collection(FIREBASE_DB, 'assignments');
+        const assignmentsCommentsQuery = query(
+            assignmentsRef,
+            where('subjectId', '==', contextSubject.id),
+            orderBy('createdAt')
+        );
+
+        const unsubscribe = onSnapshot(assignmentsCommentsQuery, async (snapshot) => {
+            const assignmentsData = [];
+            snapshot.docs.forEach(doc => {
+                var docData = doc.data()
+                assignmentsData.unshift(Object.assign(docData, {
+                    id: doc.id,
+                    createdAt: docData.createdAt ? convertToTime(docData.createdAt) : null,
+                    dueDate: docData.dueDate ? convertToTime(docData.dueDate) : null
+                }));
+            });
+            setAssignments(assignmentsData);
+        });
+
+        return () => {
+            // Отписываемся от подписки при размонтировании компонента
+            unsubscribe();
+        };
     }, [])
     
     const refresh = async () => {
@@ -65,7 +89,7 @@ const AssignmentsScreen = ({ navigate }) => {
                     size='medium'
                     color='black'
                     style={[StylesButtons.active, StylesButtons.buttonFloat]}
-                    onPress={() => navigation.navigate('AssignmentAdd')}
+                    onPress={() => navigate('AssignmentAdd')}
                 />
             }
             <FlashList

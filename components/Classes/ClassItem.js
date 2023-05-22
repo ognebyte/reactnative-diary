@@ -6,6 +6,7 @@ import StylesPaper from '../style/paper'
 import StylesContainers from '../style/containers'
 import StylesButtons from '../style/buttons'
 import StylesTexts from '../style/texts'
+import Styles from './styles'
 
 import IconMore from 'assets/svg/more-vertical'
 
@@ -15,7 +16,7 @@ const ClassesItem = ({ item }) => {
     const user = item.user
 
     return (
-        <View style={{flexDirection: 'row', width: '100%', height: 100, backgroundColor: 'white', borderRadius: 10, padding: 10}}>
+        <View style={Styles.classItem}>
             <View style={{flex: 1, justifyContent: 'space-between'}}>
                 <Text style={StylesTexts.big}>
                     {subject.name}
