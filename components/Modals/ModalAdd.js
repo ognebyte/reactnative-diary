@@ -47,8 +47,6 @@ const ModalAdd = (props) => {
     return (
         <Modal isVisible={modal}
             onModalHide={() => props.show()}
-            // swipeDirection={'right'}
-            // onSwipeComplete={() => setModal(false)}
             backdropOpacity={0.5}
             animationOutTiming={300}
             style={{justifyContent: 'flex-end', margin: 0}}

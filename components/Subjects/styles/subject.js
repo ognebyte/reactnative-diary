@@ -10,7 +10,8 @@ export default StyleSheet.create({
     },
     subject: {
         width: '100%',
-        padding: 20,
+        padding: 10,
+        minHeight: 100,
         paddingHorizontal: 15,
         gap: 15,
         backgroundColor: '#ffffff',

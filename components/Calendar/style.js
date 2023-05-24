@@ -1,8 +1,11 @@
 import { StyleSheet } from 'react-native';
+import Colors from '../style/colors';
 
 export default StyleSheet.create({
     dayContainer: {
-        width: '100%', borderRadius: 10, overflow: 'hidden'
+        width: '100%', overflow: 'hidden',
+        borderTopWidth: 1, borderBottomWidth: 1,
+        borderColor: Colors.grey
     },
     day: {
         width: '100%', flexDirection: 'row', alignItems: 'center',

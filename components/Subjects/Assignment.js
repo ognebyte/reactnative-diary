@@ -5,6 +5,7 @@ import { Animated, View, Text, Easing, TouchableOpacity } from 'react-native';
 import 'react-native-gesture-handler';
 import Swipeable from 'react-native-gesture-handler/Swipeable';
 
+import Colors from '../style/colors'
 import StylesContainers from '../style/containers'
 import StylesButtons from '../style/buttons'
 import StylesTexts from '../style/texts'
@@ -95,7 +96,7 @@ const Assignments = (props) => {
                 containerStyle={{flex: 1}}
                 childrenContainerStyle={{flex: 1}}
             >
-                <View style={[StylesSubject.subject, {flexDirection: 'row', height: 100}]}>
+                <View style={[StylesSubject.subject, {flexDirection: 'row'}]}>
                     <View style={{justifyContent: 'center'}}>
                         <TouchableOpacity
                             style={[{width: 30, height: 30}, item.isComplete ? [StylesSubject.taskCheck, {backgroundColor: '#000000'}] : StylesSubject.taskUnCheck]}
@@ -105,26 +106,39 @@ const Assignments = (props) => {
                         </TouchableOpacity>
                     </View>
                     
-                    <View style={{flex: 1, flexDirection: 'column', justifyContent: 'center'}}>
-                        <Text style={[StylesTexts.big]} numberOfLines={1}>
+                    <View style={{flex: 1, flexDirection: 'column', justifyContent: 'center', gap: 5}}>
+                        <Text numberOfLines={1}
+                            style={[
+                                StylesTexts.big,
+                                !item.isComplete ? null : {textDecorationLine: 'line-through', color: Colors.darkFade}
+                            ]}
+                        >
                             {item.title}
                         </Text>
                         
-                        <Text style={[StylesTexts.small, StylesTexts.fadeColor]}>
+                        <Text style={[StylesTexts.small, {color: Colors.darkFade}]}>
                             Создано: {moment(item.createdAt).locale('ru').format('D MMMM')}
                         </Text>
 
-                        {/* {
-                            item.description.length === 0 ? null :
-                            <Text style={[StylesTexts.small, StylesSubject.textField]} numberOfLines={2}>
-                                {item.description}
-                            </Text>
-                        } */}
-                        
+                        <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
+                            {
+                                !item.deadline ? null :
+                                <Text style={[StylesTexts.small]}>
+                                    Срок сдачи: {moment(item.deadline).format('D MMMM, HH:mm')}
+                                </Text>
+                            }
+                            {
+                                !item.grade ? null :
+                                <Text style={StylesTexts.small}>
+                                    Баллов: {item.grade}
+                                </Text>
+                            }
+                        </View>
+
                         {
-                            !item.deadline ? null :
-                            <Text style={[StylesTexts.small, StylesTexts.fadeColor]}>
-                                Срок сдачи: {moment(item.deadline).format('D MMMM, HH:mm')}
+                            !item.description ? null :
+                            <Text style={[StylesTexts.small, {color: Colors.darkFade}]} numberOfLines={2}>
+                                {item.description}
                             </Text>
                         }
                     </View>

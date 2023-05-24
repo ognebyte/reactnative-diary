@@ -1,20 +1,18 @@
 import { StyleSheet } from 'react-native';
+import Colors from '../../style/colors'
 
 export default StyleSheet.create({
     reportRow: {    
-        flexWrap: 'nowrap',
         flexDirection: 'row',
-        justifyContent: 'center',
-        width: '100%',
-        gap: 30,
+        justifyContent: 'space-evenly',
+        paddingBottom: 15,
+        backgroundColor: Colors.light,
+        elevation: 2,
+        borderBottomWidth: 1,
+        borderColor: Colors.grey,
     },
-    square: {
-        justifyContent: 'center',
+    count: {
         alignItems: 'center',
-        gap: 10,
-        borderRadius: 30,
-        backgroundColor: '#ffffff',
-        overflow: 'hidden'
     },
     textBig: {
         fontSize: 36,

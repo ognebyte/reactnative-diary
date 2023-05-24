@@ -68,7 +68,12 @@ const ProfileScreen = ({ navigation }) => {
                         <User size={'80%'} color={'#00000080'}/>
                     </View>
                     {
-                        isAuth ? <Text style={[StylesTexts.medium]}> {currentUser.firstname} {currentUser.lastname} </Text> :
+                        isAuth ?
+                        <View style={{alignItems: 'center', gap: 5}}>
+                            <Text style={[StylesTexts.medium]}> {currentUser.firstname} {currentUser.lastname} </Text>
+                            <Text style={[StylesTexts.small]}> {currentUser.email} </Text>
+                        </View>
+                        :
                         <TouchableOpacity activeOpacity={0.5} onPress={() => navigation.navigate('AuthScreen')}
                             style={[Styles.authButton, {backgroundColor: StylesTexts.linkColor.color}]}
                         >

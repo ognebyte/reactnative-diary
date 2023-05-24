@@ -141,13 +141,13 @@ const CalendarScreen = () => {
         });
     }
     
-    const saveInputs = (title, description, grade, dt) => {
+    const saveInputs = (title, description, grade, dt, isComplete) => {
         let datetime = null
         if (dt) datetime = Date.parse(dt)
         db.transaction(tx =>
             tx.executeSql(
-                `UPDATE ${tableAssignments} SET title = ?, description = ?, grade = ?, deadline = ? WHERE id = ?`,
-                [title, description, grade, datetime, itemId],
+                `UPDATE ${tableAssignments} SET title = ?, description = ?, grade = ?, deadline = ?, isComplete = ? WHERE id = ?`,
+                [title, description, grade, datetime, isComplete, itemId],
                 (_, res) => {
                     if (res.rowsAffected > 0) {
                         var rows = [...tasks];
@@ -156,6 +156,7 @@ const CalendarScreen = () => {
                         rows[indexToUpdate].subject_description = description;
                         rows[indexToUpdate].subject_grade = grade;
                         rows[indexToUpdate].subject_deadline = datetime;
+                        rows[indexToUpdate].subject_isComplete = isComplete;
                         setTasks(rows);
                     }
                 },
@@ -214,7 +215,7 @@ const CalendarScreen = () => {
             {
                 loadingDay ? <ActivityIndicator animating={true} size={'large'} color={'black'} style={StylesContainers.screen}/>
                 :
-                <View style={[StylesContainers.screen, {alignItems: 'center', gap: 30}]}>
+                <View style={{alignItems: 'center', gap: 30}}>
                     {/* <View style={[StylesContainers.alert, {width: '100%', padding: 10}]}>
                         <Text style={StylesTexts.default}> {moment(selectedDay).format('D MMMM')} </Text>
                     </View> */}
@@ -224,9 +225,6 @@ const CalendarScreen = () => {
                             estimatedItemSize={105}
                             scrollEnabled={false}
                             ListEmptyComponent={() => <Text style={[StylesContainers.alert, StylesTexts.default, {padding: 40}]}> Ничего не запланировано </Text>}
-                            ItemSeparatorComponent={() => (
-                                <View style={{alignSelf: 'center', width: '80%', height: 1.6, marginBottom: 20, borderRadius: 50, backgroundColor: '#B3B3B3'}}/>
-                            )}
                             renderItem={({item}) => (
                                 <TouchableOpacity key={item.subject_id}
                                     activeOpacity={1}
@@ -239,6 +237,7 @@ const CalendarScreen = () => {
                                             description: item.subject_description,
                                             grade: item.subject_grade,
                                             deadline: item.subject_deadline,
+                                            isComplete: item.subject_isComplete
                                         })
                                     }}
                                 >
@@ -260,10 +259,11 @@ const CalendarScreen = () => {
                 <ModalEdit show={(e) => {setModalEdit(false); if(e) setTrigger(!trigger)}}
                     title={item.title}
                     grade={item.grade.toString()}
+                    isComplete={item.isComplete}
                     description={item.description}
                     deadline={item.deadline}
                     descriptionShow={true} extraShow={true}
-                    saveInputs={(t, d, g, dt) => saveInputs(t, d, g, dt)}
+                    saveInputs={(t, d, g, dt, ic) => saveInputs(t, d, g, dt, ic)}
                 />
             }
 

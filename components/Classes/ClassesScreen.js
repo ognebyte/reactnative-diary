@@ -1,10 +1,10 @@
 import React, { useState, useEffect, useContext } from "react";
 import { FlashList } from "@shopify/flash-list";
-import { doc, addDoc, getDocs, getDoc, collection, query, where } from 'firebase/firestore';
+import { doc, addDoc, getDocs, getDoc, collection, query, where, onSnapshot } from 'firebase/firestore';
 import { FIREBASE_DB } from 'config/firebase'
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { View, Text, TouchableOpacity, RefreshControl } from 'react-native';
-import { TextInput, TouchableRipple, Button, IconButton, FAB, Portal } from 'react-native-paper';
+import { TextInput, TouchableRipple, Banner, IconButton, FAB, Portal } from 'react-native-paper';
 
 import StylesContainers from '../style/containers'
 import StylesButtons from '../style/buttons'
@@ -32,6 +32,7 @@ const ClassesScreen = ({ route, navigation }) => {
     const [loading, setLoading] = useState(false)
     const [modalMore, setModalMore] = useState(false)
     const [modalJoin, setModalJoin] = useState(false)
+    const [isLogin, setIsLogin] = useState(false)
     
     const [subjects, setSubjects] = useState([])
     const [classCode, setClassCode] = useState('')
@@ -62,7 +63,7 @@ const ClassesScreen = ({ route, navigation }) => {
         setLoading(true)
         try {
             const email = await getUser()
-            if (email === null) return alert('Login')
+            if (email !== null) return setIsLogin(true)
             await getSubjects(email)
         } catch (e) {
             alert(e);
@@ -202,7 +203,6 @@ const ClassesScreen = ({ route, navigation }) => {
                     </View>
                 }
             />
-            
             <FlashList
                 data={subjects}
                 keyExtractor={(item) => item.subject.id}

@@ -66,6 +66,13 @@ export default StyleSheet.create({
         borderRadius: 15,
         elevation: 2,
     },
+    noteItem: {
+        width: 200, height: 110,
+        padding: 10,
+        backgroundColor: Colors.paper,
+        borderRadius: 15,
+        elevation: 2,
+    },
 
     loading: {
         position: 'absolute',

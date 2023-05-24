@@ -11,8 +11,8 @@ import StylesButtons from '../style/buttons'
 import StylesTexts from '../style/texts'
 import Styles from './styles';
 
+import ModalEdit from '../Modals/ModalEdit';
 import TaskItem from './TaskItem';
-import NoteItem from './NoteItem';
 
 import Chevron from 'assets/svg/chevron';
 import Check from 'assets/svg/check';
@@ -21,9 +21,14 @@ import Check from 'assets/svg/check';
 const HomeRoute = ({ navigation }) => {
     const db = SQLite.openDatabase('diary.db')
     const [tasks, setTasks] = useState([])
-    const [loading, setLoading] = useState(true)
+    const [notes, setNotes] = useState([])
+    const [modalEdit, setModalEdit] = useState(false)
+    const [modalEditNote, setModalEditNote] = useState(false)
+    const [selectedAssignment, setSelectedAssignment] = useState()
+    const [selectedNote, setSelectedNote] = useState()
     
     const [loadingTasks, setLoadingTasks] = useState(true)
+    const [loadingNote, setLoadingNote] = useState(true)
     const [filterTasks, setFilterTasks] = useState({
         upcoming: false,
         past: false,
@@ -35,17 +40,17 @@ const HomeRoute = ({ navigation }) => {
 
     const refresh = () => {
         loadTasks()
-        setLoading(false)
+        loadNote()
     };
 
     useEffect(() => {
         refresh()
+        loadNote()
     }, [])
     
     useEffect(() => {
         loadTasks()
     }, [filterTasks])
-
 
     const loadTasks = () => {
         setLoadingTasks(true)
@@ -104,8 +109,71 @@ const HomeRoute = ({ navigation }) => {
         )
     }
 
+    const loadNote = () => {
+        setLoadingNote(true)
+        setNotes([])
+        db.transaction(tx =>
+            tx.executeSql(`SELECT * FROM notes ORDER BY id DESC`, [],
+            (_, res) => {
+                    setNotes(res.rows._array)
+                    setLoadingNote(false)
+                },
+                (_, error) => console.log(error)
+            )
+        )
+    }
+
+    const saveInputs = (title, description, grade, dt, isComplete) => {
+        let datetime = null
+        if (dt) datetime = Date.parse(dt)
+        db.transaction(tx =>
+            tx.executeSql(
+                `UPDATE assignments SET title = ?, description = ?, grade = ?, deadline = ?, isComplete = ? WHERE id = ? AND subject_id = ?`,
+                [title, description, grade, datetime, isComplete, selectedAssignment.assignments_id, selectedAssignment.subjects_id],
+                (_, res) => {
+                    loadTasks()
+                },
+                (_, error) => console.log(error)
+            )
+        )
+    }
+    
+    const saveInputsNote = (title, description) => {
+        db.transaction(tx =>
+            tx.executeSql(
+                `UPDATE notes SET title = ?, description = ? WHERE id = ?`,
+                [title, description, selectedNote.id],
+                (_, res) => {
+                    loadNote()
+                },
+                (_, error) => console.log(error)
+            )
+        )
+    }
+
     return (
-        <ScrollView refreshControl={<RefreshControl refreshing={loading} onRefresh={refresh}/>}>
+        <ScrollView refreshControl={<RefreshControl refreshing={loadingTasks} onRefresh={refresh}/>}>
+            {
+                !modalEdit ? null :
+                <ModalEdit show={() => setModalEdit(false)}
+                    title={selectedAssignment.assignments_title}
+                    isComplete={selectedAssignment.assignments_isComplete}
+                    grade={selectedAssignment.assignments_grade.toString()}
+                    description={selectedAssignment.assignments_description}
+                    deadline={selectedAssignment.assignments_deadline}
+                    descriptionShow={true} extraShow={true}
+                    saveInputs={(t, d, g, dt, ic) => saveInputs(t, d, g, dt, ic)}
+                />
+            }
+            {
+                !modalEditNote ? null :
+                <ModalEdit show={() => setModalEditNote(false)}
+                    title={selectedNote.title} isComplete={null}
+                    descriptionShow={true}
+                    description={selectedNote.description}
+                    saveInputs={(t, d) => saveInputsNote(t, d)}
+                />
+            }
             <View style={StylesContainers.default}>
                 <View style={[Styles.background, {backgroundColor: StylesTexts.linkColor.color}]}>
                     <View style={{margin: 30}}>
@@ -113,6 +181,15 @@ const HomeRoute = ({ navigation }) => {
                     </View>
                 </View>
                 <View style={[Styles.content]}>
+
+                    <TouchableOpacity
+                        activeOpacity={ 0.5 }
+                        style={[StylesButtons.default, StylesButtons.buttonsDefault, {backgroundColor: Colors.grey, alignSelf: 'center'}]}
+                        onPress={() => navigation.navigate("ClassesStack")}
+                    >
+                        <Text style={StylesTexts.default}> Классы </Text>
+                    </TouchableOpacity>
+
                     <View style={{padding: 15, gap: 10}}>
                         <Text style={[StylesTexts.big]}> Задачи </Text>
                         <View style={Styles.scrollViewItemsContainer}>
@@ -156,16 +233,6 @@ const HomeRoute = ({ navigation }) => {
                                     <Text style={StylesTexts.small}> Выполненные </Text>
                                 </Button>
                             </ScrollView>
-                                {/* <TouchableRipple onPress={() => {}}
-                                    style={[Styles.buttonHeader, {backgroundColor: Colors.primary}]}
-                                >
-                                    <Text style={StylesTexts.default}> Заметки </Text>
-                                </TouchableRipple>
-                                <TouchableRipple onPress={() => {}}
-                                    style={[Styles.buttonHeader, {backgroundColor: Colors.light}]}
-                                >
-                                    <Text style={StylesTexts.default}> Предметы </Text>
-                                </TouchableRipple> */}
                             <View style={Styles.scrollViewItems}>
                                 <View style={{paddingVertical: 15}}>
                                     {
@@ -192,9 +259,7 @@ const HomeRoute = ({ navigation }) => {
                                                 ({item}) => (
                                                     <TouchableOpacity activeOpacity={1}
                                                         style={{marginVertical: 5, marginRight: 15}}
-                                                        onPress={() => {
-                                                            alert(`${item.assignments_title}, ${item.assignments_description}, ${moment(item.assignments_deadline).format('LLLL')}`)
-                                                        }}
+                                                        onPress={() => {setSelectedAssignment(item); setModalEdit(true)}}
                                                     >
                                                         <TaskItem item={item}/>
                                                     </TouchableOpacity>
@@ -215,27 +280,56 @@ const HomeRoute = ({ navigation }) => {
                         </View>
                     </View>
                     
-                    {/* <View style={{padding: 15, gap: 10}}>
+                    <View style={{padding: 15, gap: 10}}>
                         <Text style={[StylesTexts.big]}> Заметки </Text>
                         <View style={Styles.scrollViewItemsContainer}>
                             <View style={Styles.scrollViewItems}>
-                                <ScrollView horizontal={true} style={{}}
-                                    contentContainerStyle={{paddingVertical: 15}}
-                                >
-                                    <View style={Styles.scrollView}>
-                                        {
-                                            tasks.map(
-                                                (task) => {
-                                                    return (
-                                                        <View key={task.id} style={{flex: 1}}>
-                                                            <NoteItem item={task}/>
+                                <View style={{paddingVertical: 15}}>
+                                    {
+                                        !loadingNote ? null :
+                                        <ActivityIndicator size={30} color={'black'} style={Styles.loading} />
+                                    }
+                                    { notes.length === 0 ?
+                                        <View style={[StylesContainers.default, {marginVertical: 5}]}>
+                                            <View style={[StylesContainers.alert, {width: 200, height: 110}]}>
+                                                <Text style={StylesTexts.default}>
+                                                    Нет записей
+                                                </Text>
+                                            </View>
+                                        </View>
+                                        :
+                                        <FlashList
+                                            data={notes}
+                                            keyExtractor={(item) => item.id}
+                                            estimatedItemSize={210}
+                                            horizontal={true}
+                                            showsHorizontalScrollIndicator={false}
+                                            contentContainerStyle={{paddingHorizontal: StylesContainers.screen.padding}}
+                                            renderItem={
+                                                ({item}) => (
+                                                    <TouchableOpacity activeOpacity={1}
+                                                        style={{marginVertical: 5, marginRight: 15}}
+                                                        onPress={() => {setSelectedNote(item); setModalEditNote(true)}}
+                                                    >
+                                                        <View style={Styles.noteItem}>
+                                                            <Text style={StylesTexts.medium} numberOfLines={2}>
+                                                                {item.title}
+                                                            </Text>
+                                                            {
+                                                                !item.description ? null :
+                                                                <Text style={[StylesTexts.small, {color: Colors.darkFade}]}
+                                                                    numberOfLines={4}
+                                                                >
+                                                                    {item.description}
+                                                                </Text>
+                                                            }
                                                         </View>
-                                                    )
-                                                }
-                                            )
-                                        }
-                                    </View>
-                                </ScrollView>
+                                                    </TouchableOpacity>
+                                                )
+                                            }
+                                        />
+                                    }
+                                </View>
                                 <TouchableRipple style={Styles.buttonFooterContainer}
                                     onPress={() => navigation.navigate("Notes")}
                                 >
@@ -246,10 +340,9 @@ const HomeRoute = ({ navigation }) => {
                                 </TouchableRipple>
                             </View>
                         </View>
-                    </View> */}
-
-                    <View style={{gap: 20}}>
-
+                    </View>
+                    
+                    {/* <View style={{gap: 20}}> */}
                         {/* <TouchableOpacity
                             activeOpacity={ 0.5 }
                             style={[StylesButtons.default, StylesButtons.buttonsDefault, {backgroundColor: '#000000'}]}
@@ -265,15 +358,7 @@ const HomeRoute = ({ navigation }) => {
                         >
                             <Text style={[StylesTexts.default, StylesTexts.lightColor]}> Расписание </Text>
                         </TouchableOpacity> */}
-                        
-                        <TouchableOpacity
-                            activeOpacity={ 0.5 }
-                            style={[StylesButtons.default, StylesButtons.buttonsDefault, {backgroundColor: '#000000'}]}
-                            onPress={() => navigation.navigate("ClassesStack")}
-                        >
-                            <Text style={[StylesTexts.default, StylesTexts.lightColor]}> Курсы </Text>
-                        </TouchableOpacity>
-                    </View>
+                    {/* </View> */}
                 </View>
             </View>
         </ScrollView>

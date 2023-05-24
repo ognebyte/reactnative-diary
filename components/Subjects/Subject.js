@@ -12,6 +12,7 @@ import IconEdit from '../../assets/svg/edit';
 import Chevron from "../../assets/svg/chevron";
 
 const Subject = (props) => {
+    const item = props.item
     const iconSize = 20
     const animValue = new Animated.Value(0)
     const opacityValue = new Animated.Value(1)
@@ -75,9 +76,19 @@ const Subject = (props) => {
                 childrenContainerStyle={{flex: 1}}
             >
                 <View style={[StylesSubject.subject, {flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center'}]}>
-                    <Text style={[StylesTexts.default, {maxWidth: '85%'}]} numberOfLines={1}> 
-                        {props.title}
-                    </Text>
+                    <View style={{gap: 5}}>
+                        <Text style={StylesTexts.default} numberOfLines={1}> 
+                            {item.title}
+                        </Text>
+                        <Text style={StylesTexts.small}>
+                            Задач: {item.count}
+                        </Text>
+                        { !item.count ? null :
+                            <Text style={StylesTexts.small}>
+                                Выполнено: {item.countDone}
+                            </Text>
+                        }
+                    </View>
                     <Chevron size={25} color={'black'}/>
                 </View>
             </Swipeable>

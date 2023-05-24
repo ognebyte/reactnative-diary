@@ -7,7 +7,8 @@ export default StyleSheet.create({
     fill: { width: '100%', height: '100%' },
     modalContainer: { flex: 1 },
     modal: {
-        margin: 15,
+        padding: 15,
+        paddingTop: 30,
         backgroundColor: '#ffffff',
         borderRadius: 10,
         overflow: 'hidden'

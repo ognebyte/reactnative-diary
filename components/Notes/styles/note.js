@@ -1,13 +1,13 @@
 import { StyleSheet } from 'react-native';
+import Colors from '../../style/colors';
 
 export default StyleSheet.create({
     note: {
         width: '100%',
-        height: 100,
         justifyContent: 'center',
         padding: 10,
-        gap: 10,
-        backgroundColor: '#E0E2FF',
+        gap: 5,
+        backgroundColor: Colors.paper,
     },
     noteContainer: {
         width: '100%',

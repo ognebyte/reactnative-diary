@@ -9,16 +9,21 @@ import StylesButtons from '../style/buttons';
 import StylesTexts from '../style/texts';
 import Styles from './styles';
 
-import ArrowForward from '../../assets/svg/arrow-forward'
-import ArrowBack from '../../assets/svg/arrow-back'
+import Check from '../../assets/svg/check'
 
 const TaskItem = ({ item }) => {
 
     return (
         <View style={Styles.taskItem}>
-            <Text style={StylesTexts.small} numberOfLines={1}>
-                {item.subjects_title}
-            </Text>
+            <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
+                <Text style={[StylesTexts.small, {flex: 1}]} numberOfLines={1}>
+                    {item.subjects_title}
+                </Text>
+                {
+                    !item.assignments_isComplete ? null :
+                    <Check size={20} color={Colors.link}/>
+                }
+            </View>
             <Text style={StylesTexts.medium} numberOfLines={2}>
                 {item.assignments_title}
             </Text>

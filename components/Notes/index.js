@@ -110,7 +110,7 @@ const Notes = () => {
         <View style={{flex: 1}}>
             <FlashList
                 data={notes}
-                estimatedItemSize={130}
+                estimatedItemSize={63}
                 keyExtractor={(item) => item.id}
                 contentContainerStyle={{padding: screenPadding, paddingBottom: screenPadding*3}}
                 refreshControl={ <RefreshControl refreshing={loading} onRefresh={refresh}/> }
@@ -122,14 +122,6 @@ const Notes = () => {
                 renderItem={
                     ({item}) => (
                         <TouchableOpacity activeOpacity={1}
-                            onLongPress={
-                                () => {
-                                    setItemId(item.id)
-                                    setItemTitle(item.title)
-                                    setItemDescription(item.description)
-                                    setModalMore(true)
-                                }
-                            }
                             onPress={
                                 () => {
                                     setItemId(item.id)
@@ -151,44 +143,13 @@ const Notes = () => {
                     }
             />
 
-            {/* Modal More */}
-            <Modal
-                visible={modalMore}
-                animationType='fade'
-                transparent={true}
-                statusBarTranslucent={true}
-            >
-                <View style={[{flex: 1, justifyContent: 'center'}, StylesContainers.modalBackground]}>
-                    <View style={[StylesContainers.modal, { gap: 20 }]}>
-                        <TouchableOpacity activeOpacity={ 0.5 }
-                            onPress={() => { deleteNote(itemId); setModalMore(false); }}
-                            style={[StylesButtons.default, StylesButtons.bottom, StylesButtons.delete]}
-                            >
-                            <Text style={StylesTexts.default}> Удалить </Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity activeOpacity={ 0.5 }
-                            onPress={() => { setModalEdit(true); setModalMore(false); }}
-                            style={[StylesButtons.default, StylesButtons.bottom, StylesButtons.edit]}
-                        >
-                            <Text style={StylesTexts.default}> Изменить </Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity activeOpacity={ 0.5 }
-                            onPress={() => setModalMore(false)}
-                            style={[StylesButtons.default, StylesButtons.bottom, StylesButtons.cancel]}
-                        >
-                            <Text style={[StylesTexts.default, StylesTexts.lightColor]}> Закрыть </Text>
-                        </TouchableOpacity>
-                    </View>
-
-                </View>
-
-            </Modal>
-
             {/* Modal Edit */}
             {
                 !modalEdit ? null :
                 <ModalEdit show={() => setModalEdit(false)}
-                    title={itemTitle} description={itemDescription}
+                    title={itemTitle}
+                    isComplete={null}
+                    description={itemDescription}
                     descriptionShow={true}
                     saveInputs={(t, d) => saveInputs(t, d)}
                 />

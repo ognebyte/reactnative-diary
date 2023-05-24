@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import * as SQLite from 'expo-sqlite'
 import { Modal, View, TextInput, Text, TouchableOpacity, KeyboardAvoidingView, ScrollView, RefreshControl } from 'react-native';
 import { FlashList } from "@shopify/flash-list";
+import { TouchableRipple, FAB } from 'react-native-paper';
 
 import StylesContainers from '../style/containers'
 import StylesButtons from '../style/buttons'
@@ -43,13 +44,28 @@ const SubjectsScreen = ({ navigation }) => {
     )
 
     const getAllSubjects = () => {
-        setSubjects([])
-        db.transaction(tx =>
-            tx.executeSql(`SELECT * FROM ${table} ORDER BY id DESC`, [],
-                (_, res) => setSubjects(res.rows._array),
+        db.transaction(tx => {
+            tx.executeSql(`SELECT
+                subjects.id as subjects_id,
+                subjects.title as subjects_title,
+                COUNT(assignments.id) as count,
+                COUNT(CASE WHEN assignments.isComplete = 1 THEN 1 END) as countDone
+                FROM subjects
+                LEFT JOIN assignments ON subjects.id = assignments.subject_id
+                GROUP BY subjects.id, subjects.title
+                ORDER BY subjects.id DESC`, [],
+                (_, res) => {
+                    const subjectsData = res.rows._array.map(item => ({
+                        id: item.subjects_id,
+                        title: item.subjects_title,
+                        count: item.count,
+                        countDone: item.countDone
+                    }));
+                    setSubjects(subjectsData);
+                },
                 (_, error) => console.log(error)
-            )
-        )
+            );
+        })
     }
 
     const deleteSubject = (id) => {
@@ -74,12 +90,7 @@ const SubjectsScreen = ({ navigation }) => {
             tx.executeSql(
                 `INSERT INTO ${table} (title) VALUES (?)`, [title],
                 (_, res) => {
-                    setSubjects(
-                        item => [
-                            {id: res.insertId, title: title},
-                            ...item
-                        ]
-                    )
+                    getAllSubjects()
                 },
                 (_, error) => console.log(error)
             );
@@ -125,8 +136,7 @@ const SubjectsScreen = ({ navigation }) => {
                             style={{marginBottom: screenPadding}}
                         >
                             <Subject
-                                title={item.title}
-                                createdBy={item.createdBy}
+                                item={item}
                                 edit={() => {setItemId(item.id); setItemTitle(item.title); setModalEdit(true)}}
                                 setDelete={() => deleteSubject(item.id)}
                             />
@@ -153,16 +163,12 @@ const SubjectsScreen = ({ navigation }) => {
             }
 
             {/* Button Add */}
-            <View style={[StylesButtons.buttonFooter, modalAdd ? {display: 'none'} : {display: 'flex'}]}>
-                <TouchableOpacity
-                    activeOpacity={ 0.5 }
-                    style={StylesButtons.addButton}
-                    onPress={() => setModalAdd(true)}
-                >
-                    <IconPlus size={30} color={'black'}/>
-                    <Text style={StylesTexts.small}> Добавить предмет </Text>
-                </TouchableOpacity>
-            </View>
+            <FAB icon={IconPlus}
+                size='medium'
+                color='black'
+                style={[StylesButtons.active, StylesButtons.buttonFloat]}
+                onPress={() => setModalAdd(true)}
+            />
         </View>
     );
 };

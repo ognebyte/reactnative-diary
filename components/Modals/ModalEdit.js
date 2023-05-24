@@ -4,6 +4,7 @@ import 'moment/locale/ru'
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import { View, TextInput, Text, TouchableOpacity, ScrollView, Dimensions, Keyboard, Switch } from 'react-native';
 import Modal from "react-native-modal";
+import { Checkbox } from 'react-native-paper';
 
 import StylesContainers from '../style/containers'
 import StylesButtons from '../style/buttons'
@@ -25,6 +26,7 @@ const ModalEdit = (props) => {
     const inputDeadline = props.deadline
     const [saturday, setSaturday] = useState(props.saturday == 1 ? true : false)
 
+    const [isComplete, setIsComplete] = useState(props.isComplete ? true : false)
     const [titleEdit, setTitleEdit] = useState(false)
     const [modalDate, setModalDate] = useState(false)
     const [date, setDate] = useState(inputDeadline)
@@ -41,7 +43,7 @@ const ModalEdit = (props) => {
             saturday != props.saturday
         ) setEdited(true)
         else setEdited(false)
-    }, [inputTitle, inputDescription, inputGrade, date, time, saturday])
+    }, [inputTitle, inputDescription, inputGrade, date, time, saturday, isComplete])
 
     return (
         <Modal isVisible={modal}
@@ -57,21 +59,36 @@ const ModalEdit = (props) => {
                 <ScrollView contentContainerStyle={{paddingTop: 150}}>
                     <View style={StylesContainers.modal}>
                         <View style={{gap: 30}}>
-                            <TextInput
-                                blurOnSubmit={true}
-                                onEndEditing={() => setTitleEdit(false)}
-                                onFocus={() => setTitleEdit(true)}
-                                inputMode="text"
-                                placeholder="Введите заголовок"
-                                returnKeyType='done'
-                                value={inputTitle}
-                                onChangeText={(v) => setInputTitle(v)}
-                                onSubmitEditing={() => Keyboard.dismiss()}
-                                style={[StylesTexts.big, StylesTexts.inputTitle, {borderColor: titleEdit ? 'black' : 'transparent'}]}
-                                placeholderTextColor={StylesTexts.placeholder.color}
-                                multiline={true}
-                                maxLength={50}
-                            />
+                            <View style={{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', gap: 30}}>
+                                <View style={{flex: 1}}>
+                                    <TextInput
+                                        blurOnSubmit={true}
+                                        onEndEditing={() => setTitleEdit(false)}
+                                        onFocus={() => setTitleEdit(true)}
+                                        inputMode="text"
+                                        placeholder="Введите заголовок"
+                                        returnKeyType='done'
+                                        value={inputTitle}
+                                        onChangeText={(v) => setInputTitle(v)}
+                                        onSubmitEditing={() => Keyboard.dismiss()}
+                                        style={[
+                                            StylesTexts.big, StylesTexts.inputTitle,
+                                            {
+                                                textDecorationLine: isComplete ? 'line-through' : 'none',
+                                                borderColor: titleEdit ? 'black' : 'transparent'
+                                            }
+                                        ]}
+                                        placeholderTextColor={StylesTexts.placeholder.color}
+                                        multiline={true}
+                                        maxLength={50}
+                                    />
+                                </View>
+                                { props.isComplete === null ? null :
+                                    <Checkbox status={isComplete ? 'checked' : 'unchecked'}
+                                        onPress={() => setIsComplete(!isComplete)}
+                                    />
+                                }
+                            </View>
 
                             { !props.extraShow ? null :
                                 <View style={StylesContainers.column}>
@@ -164,7 +181,7 @@ const ModalEdit = (props) => {
                             }
                         </View>
                         
-                        <View style={{flexDirection: 'row', width: '100%', marginTop: 100, gap: 10}}>
+                        <View style={{flexDirection: 'row', width: '100%', marginTop: 60, gap: 10}}>
                             <TouchableOpacity onPress={() => setModal(false)}
                                 activeOpacity={0.5}
                                 style={[StylesButtons.default, StylesButtons.bottom, { flex: 0.5, backgroundColor: 'black' }]}
@@ -182,7 +199,7 @@ const ModalEdit = (props) => {
                                             if(date) {
                                                 datetime = `${!date ? '' : moment(date).format('YYYY-MM-DD')} ${!time ? '00:00:00' : moment(time).format('HH:mm:ss')}`
                                             }
-                                            props.saveInputs(inputTitle, inputDescription, inputGrade, datetime)
+                                            props.saveInputs(inputTitle, inputDescription, inputGrade, datetime, isComplete)
                                         }
                                         setEdited(!edited)
                                         setE(true)

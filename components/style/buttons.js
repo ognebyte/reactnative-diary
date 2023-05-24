@@ -5,7 +5,7 @@ export default StyleSheet.create({
     default: {
         justifyContent: 'center',
         alignItems: 'center',
-        borderRadius: 10,
+        borderRadius: 15,
     },
     buttonSquare: {
         width: 50,
@@ -14,6 +14,7 @@ export default StyleSheet.create({
     buttonsDefault: {
         width: 200,
         height: 50,
+        elevation: 2
     },
     buttonFooter: {
         position: 'absolute',
@@ -28,8 +29,8 @@ export default StyleSheet.create({
         padding: 10,
         borderRadius: 10,
         // shadowColor: '#000000', shadowOpacity: 0.3, shadowRadius: 6,
-        // elevation: 6, // shadow for android
         backgroundColor: '#fff',
+        elevation: 2, // shadow for android
     },
     bottom: { height: 45 },
     buttonFloat: {

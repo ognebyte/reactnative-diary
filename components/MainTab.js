@@ -100,9 +100,10 @@ const App = () => {
                     children={() => <Calendar />}
                 />
                 
-                <Tab.Screen name='Setting' options={{title: 'Настройки'}}
+                {/* <Tab.Screen name='Setting' options={{title: 'Настройки'}}
                     children={() => <Setting />}
-                />
+                /> */}
+                
                 <Tab.Screen name='Profile' options={{title: 'Профиль', headerShown: false}}
                     children={() => <Profile />}
                 />
