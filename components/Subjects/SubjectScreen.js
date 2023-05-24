@@ -8,7 +8,6 @@ import StylesTexts from '../style/texts'
 
 import Assignments from "./Assignments";
 import Report from "./Report";
-import Users from "./Users";
 
 
 const SubjectScreen = ({ route, navigation }) => {

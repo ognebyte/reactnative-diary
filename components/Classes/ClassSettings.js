@@ -38,11 +38,12 @@ const ClassSettings = ({ navigation }) => {
             if (!(await checkUserAccess())) throw Error('Нет доступа!')
             var value = {
                 name: className,
-                description: classDescription,
+                description: classDescription ? classDescription : null,
                 canJoin: canJoin
             }
             await updateDoc(doc(FIREBASE_DB, 'subjects', contextSubject.id), value);
             updateContextSubject(Object.assign({}, contextSubject, value));
+            navigation.goBack()
         } catch (error) {
             alert(error);
         }
@@ -56,8 +57,9 @@ const ClassSettings = ({ navigation }) => {
             setLoading(false)
             navigation.navigate('ClassesScreen', { update: true })
             await clearCollection('members')
-            await clearCollection('comments')
             await clearCollection('assignments')
+            await clearCollection('comments')
+            await clearCollection('submissions')
             await deleteDoc(doc(collection(FIREBASE_DB, 'subjects'), contextSubject.id))
         } catch (error) {
             alert(error);
@@ -70,6 +72,7 @@ const ClassSettings = ({ navigation }) => {
             <Button mode='contained-tonal'
                 style={StylesButtons.buttonFloat}
                 buttonColor={StylesButtons.active.backgroundColor}
+                labelStyle={StylesTexts.default}
                 onPress={() => saveClass()}
                 disabled={className.length === 0}
             >

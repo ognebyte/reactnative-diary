@@ -1,4 +1,5 @@
 import { StyleSheet } from 'react-native';
+import Colors from './colors';
 
 export default StyleSheet.create({
     default: {
@@ -38,11 +39,19 @@ export default StyleSheet.create({
         borderRadius: 100,
         zIndex: 1000,
     },
+    buttonFloatTopRight: {
+        position: 'absolute',
+        right: 0, top: 0,
+        marginTop: -5,
+        marginRight: -5,
+        zIndex: 1
+    },
     
-    edit: { backgroundColor: '#E0E2FF' },
-    delete: { backgroundColor: '#FF9898' },
-    cancel: { backgroundColor: '#00000075' },
-    accept: { backgroundColor: '#88F799' },
+    delete: { backgroundColor: Colors.alarm },
+    accept: { backgroundColor: Colors.accept },
+    cancel: { backgroundColor: Colors.cancel },
+    edit: { backgroundColor: Colors.edit },
+
     inactiveBack: { backgroundColor: '#B3B3B3' },
     activeBack: { backgroundColor: '#A2A2D0' },
     inactive: { backgroundColor: '#F0F0F0' },

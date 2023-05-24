@@ -74,13 +74,10 @@ const Subject = (props) => {
                 containerStyle={{flex: 1}}
                 childrenContainerStyle={{flex: 1}}
             >
-                <View style={[StylesSubject.subject, {flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', height: 50}]}>
+                <View style={[StylesSubject.subject, {flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center'}]}>
                     <Text style={[StylesTexts.default, {maxWidth: '85%'}]} numberOfLines={1}> 
                         {props.title}
                     </Text>
-                    {/* <Text style={[StylesTexts.small, StylesTexts.fadeColor]} numberOfLines={1}> 
-                        Создал: {props.createdBy} {props.createdBy !== props.user ? null : `(Вы)`}
-                    </Text> */}
                     <Chevron size={25} color={'black'}/>
                 </View>
             </Swipeable>

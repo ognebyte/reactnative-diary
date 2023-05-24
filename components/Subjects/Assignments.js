@@ -141,7 +141,7 @@ const Assignments = (props) => {
                 data={subjectTask}
                 estimatedItemSize={130}
                 keyExtractor={(item) => item.id}
-                contentContainerStyle={{padding: screenPadding, paddingBottom: screenPadding*3}}
+                contentContainerStyle={{paddingTop: screenPadding, paddingBottom: screenPadding*3}}
                 refreshControl={ <RefreshControl refreshing={loading} onRefresh={refresh}/> }
                 ListEmptyComponent={() => (
                     <View style={[StylesContainers.screen, StylesContainers.default]}>

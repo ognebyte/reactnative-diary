@@ -3,7 +3,6 @@ import { useNavigation } from '@react-navigation/native';
 import { FlashList } from "@shopify/flash-list";
 import { doc, addDoc, getDocs, onSnapshot, collection, query, where, orderBy } from 'firebase/firestore';
 import { FIREBASE_DB } from 'config/firebase'
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { View, Text, TouchableOpacity, RefreshControl } from 'react-native';
 import { TextInput, TouchableRipple, Button, FAB } from 'react-native-paper';
 
@@ -23,13 +22,25 @@ import IconPlus from 'assets/svg/plus'
 
 
 const AssignmentsScreen = ({ navigate }) => {
-    const { contextSubject } = useContext(Context);
+    const {
+        contextSubject,
+        updateContextSubject,
+        contextCurrentUser,
+        updateContextCurrentUser,
+        checkUserAccess,
+        clearCollection,
+        contextAssignment,
+        updateContextAssignment,
+    } = useContext(Context);
 
-    const [loading, setLoading] = useState(false)
-    
     const [assignments, setAssignments] = useState([])
+    const [loading, setLoading] = useState(true)
+    const isPupil = contextSubject.role === 'pupil' ? true : false
     
-    const convertToTime = (value) => ((value.seconds * 1000) + (value.nanoseconds / 1000000));
+    const convertToTime = (value) => {
+        if (value === null) return null
+        return ((value.seconds * 1000) + (value.nanoseconds / 1000000))
+    };
 
     useEffect(() => {
         const assignmentsRef = collection(FIREBASE_DB, 'assignments');
@@ -40,51 +51,71 @@ const AssignmentsScreen = ({ navigate }) => {
         );
 
         const unsubscribe = onSnapshot(assignmentsCommentsQuery, async (snapshot) => {
+            setLoading(true)
             const assignmentsData = [];
             snapshot.docs.forEach(doc => {
                 var docData = doc.data()
                 assignmentsData.unshift(Object.assign(docData, {
                     id: doc.id,
-                    createdAt: docData.createdAt ? convertToTime(docData.createdAt) : null,
-                    dueDate: docData.dueDate ? convertToTime(docData.dueDate) : null
+                    createdAt: convertToTime(docData.createdAt),
+                    dueDate: convertToTime(docData.dueDate)
                 }));
             });
+
+            await Promise.all(assignmentsData.map(async (assignment) => {
+                if (isPupil) {
+                    var submission = null
+                    const q = query(collection(FIREBASE_DB, 'submissions'),
+                        where('assignmentId', '==', assignment.id),
+                        where('submittedBy', '==', contextCurrentUser.email)
+                    );
+                    const querySnapshot = await getDocs(q);
+                    if (!querySnapshot.empty) {
+                        submission = querySnapshot.docs[0].data()
+                    }
+                    Object.assign(assignment, {
+                        submission: submission
+                    })
+                } else {
+                    var submissionSubmitted = 0
+                    var submissionGraded = 0
+                    const querySubmissions = await getDocs(query(
+                        collection(FIREBASE_DB, 'submissions'),
+                        where('assignmentId', '==', assignment.id)
+                    ))
+                    if (!querySubmissions.empty) {
+                        submissionSubmitted = querySubmissions.docs.length
+                        submissionGraded = querySubmissions.docs.filter((obj) => obj.data().gradedBy !== null).length
+                    }
+                    
+                    var commentCount = 0
+                    const queryComments = await getDocs(query(
+                        collection(FIREBASE_DB, 'comments'),
+                        where('assignmentId', '==', assignment.id)
+                    ))
+                    if (!queryComments.empty) {
+                        commentCount = queryComments.docs.length
+                    }
+                    Object.assign(assignment, {
+                        submissionSubmitted: submissionSubmitted,
+                        submissionGraded: submissionGraded,
+                        commentCount: commentCount,
+                    })
+                }
+            }));
+            setLoading(false)
             setAssignments(assignmentsData);
         });
 
         return () => {
-            // Отписываемся от подписки при размонтировании компонента
             unsubscribe();
         };
     }, [])
-    
-    const refresh = async () => {
-        setLoading(true)
-        try {
-            await getAssignments()
-        } catch (e) {
-            alert(e);
-        }
-        setLoading(false)
-    }
-    
-    const getAssignments = async () => {
-        const querySnapshot = await getDocs(query(
-            collection(FIREBASE_DB, 'assignments'),
-            where('subjectId', '==', contextSubject.id)
-        ));
-        const data = [];
-        querySnapshot.forEach(doc => {
-            data.push(Object.assign(doc.data(), {id: doc.id}));
-        });
-        setAssignments(data)
-    }
-
 
     return (
         <View style={{flex: 1}}>
             {
-                contextSubject.role == 'pupil' ? null :
+                isPupil ? null :
                 <FAB icon={IconPlus}
                     size='medium'
                     color='black'
@@ -95,9 +126,9 @@ const AssignmentsScreen = ({ navigate }) => {
             <FlashList
                 data={assignments}
                 keyExtractor={(item) => item.id}
-                estimatedItemSize={80}
-                contentContainerStyle={StylesContainers.screen}
-                refreshControl={<RefreshControl refreshing={loading} onRefresh={refresh}/>}
+                refreshControl={<RefreshControl refreshing={loading} enabled={false}/>}
+                estimatedItemSize={isPupil ? 180 : 190}
+                contentContainerStyle={StylesContainers.contentContainerStyle}
                 ListEmptyComponent={() => (
                     <View style={StylesContainers.default}>
                         <Text style={[StylesTexts.default, StylesContainers.alert, {padding: 40}]}> Нет записей </Text>
@@ -107,9 +138,12 @@ const AssignmentsScreen = ({ navigate }) => {
                     ({item}) => (
                         <TouchableOpacity activeOpacity={1}
                             onPress={
-                                () => navigate('AssignmentScreen', { assignment: item })
+                                () => {
+                                    updateContextAssignment(item)
+                                    navigate('AssignmentScreen')
+                                }
                             }
-                            style={{marginBottom: 30}}
+                            style={StylesContainers.flashListItemContainer}
                         >
                             <AssignmentItem item={item}/>
                         </TouchableOpacity>

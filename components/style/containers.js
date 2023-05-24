@@ -1,4 +1,5 @@
 import { StyleSheet } from 'react-native';
+import Colors from './colors'
 
 export default StyleSheet.create({
     default: { alignItems: 'center', justifyContent: 'center', flex: 1, },
@@ -33,8 +34,9 @@ export default StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         textAlign: 'center',
-        backgroundColor: '#00000010',
+        backgroundColor: Colors.grey,
         borderRadius: 10,
+        elevation: 2,
     },
     photoContainer: {
         justifyContent: 'center', alignItems: 'center',
@@ -43,7 +45,15 @@ export default StyleSheet.create({
     scrollViewContainer: {
         paddingTop: 15, paddingBottom: 100
     },
+    contentContainerStyle: {
+        padding: 15, paddingBottom: 100
+    },
     flashListItemContainer: {
         marginBottom: 30
+    },
+    verticalSeparator: {
+        width: 2, height: '100%',
+        borderRadius: 10,
+        backgroundColor: Colors.darkFade
     },
 });

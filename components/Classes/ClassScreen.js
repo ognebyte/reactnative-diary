@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useMemo, useContext } from "react";
 import { View, Dimensions } from 'react-native';
-import { doc, getDoc, updateDoc } from 'firebase/firestore';
+import { doc, getDoc, getDocs, collection, query, where } from 'firebase/firestore';
 import { FIREBASE_AUTH, FIREBASE_DB } from 'config/firebase'
 import { TabView, TabBar, SceneMap } from 'react-native-tab-view';
 import { IconButton } from 'react-native-paper';
@@ -19,7 +19,16 @@ import IconRefresh from 'assets/svg/refresh'
 
 
 const ClassScreen = ({ navigation }) => {
-    const { contextSubject, updateContextSubject } = useContext(Context);
+    const {
+        contextSubject,
+        updateContextSubject,
+        contextCurrentUser,
+        updateContextCurrentUser,
+        checkUserAccess,
+        clearCollection,
+        contextAssignment,
+        updateContextAssignment
+    } = useContext(Context);
 
     const [loading, setLoading] = useState(false)
 
@@ -56,9 +65,18 @@ const ClassScreen = ({ navigation }) => {
 
     const refresh = async () => {
         setLoading(true)
-        const docSnap = await getDoc(doc(FIREBASE_DB, 'subjects', contextSubject.id))
-        var docData = Object.assign({}, contextSubject, docSnap.data())
-        updateContextSubject(docData)
+        try {
+            const docSnap = await getDoc(doc(FIREBASE_DB, 'subjects', contextSubject.id))
+            const q = query(collection(FIREBASE_DB, 'members'),
+                where('subjectId', '==', contextSubject.id),
+                where('userId', '==', contextCurrentUser.email)
+            );
+            const querySnapshot = await getDocs(q);
+            var docData = Object.assign({}, contextSubject, docSnap.data(), { role: querySnapshot.docs[0].data().role})
+            updateContextSubject(docData)
+        } catch (error) {
+            alert(error)
+        }
         setLoading(false)
     }
 

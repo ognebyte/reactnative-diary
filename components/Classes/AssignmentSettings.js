@@ -20,22 +20,23 @@ import ModalDefault from "../Modals/ModalDefault";
 import IconClose from 'assets/svg/close'
 
 
-const AssignmentSettings = ({ route, navigation }) => {
+const AssignmentSettings = ({ navigation }) => {
     const {
         contextSubject,
         updateContextSubject,
         contextCurrentUser,
         updateContextCurrentUser,
         checkUserAccess,
-        clearCollection
+        clearCollection,
+        contextAssignment,
+        updateContextAssignment
     } = useContext(Context);
-    const assignment = route.params.assignment
     const screenPadding = StylesContainers.screen.padding;
     const [loading, setLoading] = useState(false)
-    const [title, setTitle] = useState(assignment.title)
-    const [description, setDescription] = useState(assignment.description)
-    const [dueDate, setDueDate] = useState(assignment.dueDate)
-    const [maxPoints, setMaxPoints] = useState(assignment.maxPoints)
+    const [title, setTitle] = useState(contextAssignment.title)
+    const [description, setDescription] = useState(contextAssignment.description)
+    const [dueDate, setDueDate] = useState(contextAssignment.dueDate)
+    const [maxPoints, setMaxPoints] = useState(contextAssignment.maxPoints)
     
     const [modalDate, setModalDate] = useState(false)
     const [modalScore, setModalScore] = useState(false)
@@ -45,23 +46,20 @@ const AssignmentSettings = ({ route, navigation }) => {
         try {
             if (!(await checkUserAccess())) throw Error('Нет доступа!')
             await updateDoc(
-                doc(FIREBASE_DB, 'assignments', assignment.id), {
+                doc(FIREBASE_DB, 'assignments', contextAssignment.id), {
                     title: title,
-                    description: description,
-                    dueDate: dueDate,
-                    maxPoints: maxPoints,
+                    description: description ? description : null,
+                    dueDate: dueDate ? dueDate : null,
+                    maxPoints: maxPoints
                 }
             );
-
-            console.log(dueDate)
-
-            var updatedAssignment = {
+            updateContextAssignment(Object.assign({}, contextAssignment, {
                 title: title,
                 description: description,
-                dueDate: dueDate,
+                dueDate: dueDate ? moment(dueDate).valueOf() : null,
                 maxPoints: maxPoints
-            }
-            navigation.navigate('AssignmentScreen', { assignment: Object.assign({}, assignment, updatedAssignment)})
+            }))
+            navigation.navigate('AssignmentScreen')
         } catch (error) {
             alert(error);
         }
@@ -73,7 +71,8 @@ const AssignmentSettings = ({ route, navigation }) => {
             if (!(await checkUserAccess())) throw Error('Нет доступа!')
             navigation.navigate('ClassScreen')
             await clearCollection('comments')
-            await deleteDoc(doc(collection(FIREBASE_DB, 'assignments'), assignment.id))
+            await clearCollection('submissions')
+            await deleteDoc(doc(collection(FIREBASE_DB, 'assignments'), contextAssignment.id))
         } catch (error) {
             alert(error);
         }
@@ -86,6 +85,7 @@ const AssignmentSettings = ({ route, navigation }) => {
                 onPress={assignmentSave}
                 disabled={title.length === 0}
                 style={StylesButtons.buttonFloat}
+                labelStyle={StylesTexts.default}
                 buttonColor={StylesButtons.active.backgroundColor}
             >
                 Сохранить

@@ -48,8 +48,8 @@ const AssignmentAdd = ({ navigation }) => {
                     createdBy: contextCurrentUser.email,
                     createdAt: new Date(),
                     title: title,
-                    description: description,
-                    dueDate: dueDate,
+                    description: description ? description : null,
+                    dueDate: dueDate ? dueDate : null,
                     maxPoints: maxPoints,
                 }
             );

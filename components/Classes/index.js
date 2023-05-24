@@ -6,7 +6,7 @@ import { FIREBASE_DB } from 'config/firebase'
 import { Easing, Text } from 'react-native';
 
 import NavigationTheme from '../style/navigation';
-import StylesTexts from '../style/texts';
+import Colors from '../style/colors';
 
 import Context from 'config/context';
 import ClassesScreen from "./ClassesScreen";
@@ -16,15 +16,22 @@ import ClassAdd from './ClassAdd'
 import AssignmentAdd from './AssignmentAdd'
 import AssignmentScreen from './AssignmentScreen'
 import AssignmentSettings from './AssignmentSettings'
+import SubmissionsScreen from './SubmissionsScreen'
+import SubmissionAdd from './SubmissionAdd'
+import SubmissionGrade from './SubmissionGrade'
 
 const Stack = createStackNavigator();
 
 const ClassesStack = () => {
     const [contextSubject, setContextSubject] = useState({});
     const [contextCurrentUser, setContextCurrentUser] = useState({});
+    const [contextAssignment, setContextAssignment] = useState({});
+    const [contextSubmissions, setContextSubmissions] = useState([]);
 
     const updateContextSubject = (value) => setContextSubject(value)
     const updateContextCurrentUser = (value) => setContextCurrentUser(value)
+    const updateContextAssignment = (value) => setContextAssignment(value)
+    const updateContextSubmissions = (value) => setContextSubmissions(value)
 
     const checkUserAccess = async () => {
         const membersCollectionRef = collection(FIREBASE_DB, 'members');
@@ -53,7 +60,11 @@ const ClassesStack = () => {
         contextCurrentUser,
         updateContextCurrentUser,
         checkUserAccess,
-        clearCollection
+        clearCollection,
+        contextAssignment,
+        updateContextAssignment,
+        contextSubmissions,
+        updateContextSubmissions,
     }
 
     const transitionSpecConfig = {
@@ -83,8 +94,19 @@ const ClassesStack = () => {
                 <Stack.Screen name="ClassScreen" component={ClassScreen} options={{title: 'Класс'}} />
                 <Stack.Screen name="ClassSettings" component={ClassSettings} options={{title: 'Настройки'}} />
                 <Stack.Screen name="AssignmentAdd" component={AssignmentAdd} options={{title: 'Создание задания'}} />
-                <Stack.Screen name="AssignmentScreen" component={AssignmentScreen} options={{headerTitleStyle: {display: 'none'}}} />
-                <Stack.Screen name="AssignmentSettings" component={AssignmentSettings} options={{headerTitleStyle: {display: 'none'}}} />
+                <Stack.Screen name="AssignmentScreen" component={AssignmentScreen}
+                    options={{headerTitleStyle: {display: 'none'}, headerStyle: {backgroundColor: Colors.primary}}}
+                />
+                <Stack.Screen name="AssignmentSettings" component={AssignmentSettings}
+                    options={{headerTitleStyle: {display: 'none'}}}
+                />
+                <Stack.Screen name="SubmissionsScreen" component={SubmissionsScreen}
+                    options={{headerTitleStyle: {display: 'none'}}}
+                />
+                <Stack.Screen name="SubmissionAdd" component={SubmissionAdd}
+                    options={{headerTitleStyle: {display: 'none'}}}
+                />
+                <Stack.Screen name="SubmissionGrade" component={SubmissionGrade} options={{title: 'Оценка задания'}}/>
             </Stack.Navigator>
         </Context.Provider>
     );

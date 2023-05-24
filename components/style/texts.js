@@ -15,11 +15,11 @@ export default StyleSheet.create({
     },
     medium: {
         fontSize: 22,
-        fontWeight: '400',
+        fontWeight: '600',
     },
     small: {
         fontSize: 14,
-        fontWeight: '200',
+        fontWeight: '600',
     },
     lightColor: { color: "#ffffff" },
     linkColor: { color: '#6E7AFF' },

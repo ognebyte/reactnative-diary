@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext } from "react";
 import { FlashList } from "@shopify/flash-list";
-import { doc, addDoc, getDocs, getDoc, collection, query, where, disableNetwork, enableNetwork, orderBy } from 'firebase/firestore';
+import { doc, addDoc, getDocs, getDoc, collection, query, where } from 'firebase/firestore';
 import { FIREBASE_DB } from 'config/firebase'
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { View, Text, TouchableOpacity, RefreshControl } from 'react-native';
@@ -88,6 +88,7 @@ const ClassesScreen = ({ route, navigation }) => {
 
         const subjectIds = [];
         const subjectData = [];
+        let countPupil = 0;
 
         querySnapshot.forEach(doc => {
             subjectIds.push({id: doc.data().subjectId, role: doc.data().role});
@@ -96,9 +97,18 @@ const ClassesScreen = ({ route, navigation }) => {
         await Promise.all(subjectIds.map(async (subjectId) => {
             const subjectDocSnap = await getDoc(doc(FIREBASE_DB, 'subjects', subjectId.id));
             const userDocSnap = await getDoc(doc(FIREBASE_DB, 'users', subjectDocSnap.data().createdBy));
+
+            const membersSnapshot = await getDocs(query(collection(FIREBASE_DB, 'members'),
+                where('subjectId', '==', subjectId.id),
+            ));
+            if (!membersSnapshot.empty) {
+                membersSnapshot.docs.forEach(member => {
+                    if (member.data().role === 'pupil') countPupil += 1;
+                })
+            }
             var subjectDocData = Object.assign(subjectDocSnap.data(), {id: subjectDocSnap.id, role: subjectId.role})
             var userDocData = userDocSnap.data()
-            subjectData.push({subject: subjectDocData, user: userDocData});
+            subjectData.push({subject: subjectDocData, user: userDocData, countPupil: countPupil});
         }));
 
         setSubjects(subjectData);
@@ -192,9 +202,6 @@ const ClassesScreen = ({ route, navigation }) => {
                     </View>
                 }
             />
-
-            {/* <Button mode='contained' style={{width: 200, marginTop: 10, alignSelf: 'center'}} onPress={() => disableNetwork(FIREBASE_DB)}>disableNetwork</Button>
-            <Button mode='contained' style={{width: 200, marginTop: 10, alignSelf: 'center'}} onPress={() => enableNetwork(FIREBASE_DB)}>enableNetwork</Button> */}
             
             <FlashList
                 data={subjects}
@@ -216,7 +223,7 @@ const ClassesScreen = ({ route, navigation }) => {
                             }}
                             style={StylesContainers.flashListItemContainer}
                         >
-                            <ClassItem item={item}/>
+                            <ClassItem item={item} refresh={() => refresh()}/>
                         </TouchableOpacity>
                     )
                 }

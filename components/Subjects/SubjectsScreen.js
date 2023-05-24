@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import * as SQLite from 'expo-sqlite'
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Modal, View, TextInput, Text, TouchableOpacity, KeyboardAvoidingView, ScrollView, RefreshControl } from 'react-native';
 import { FlashList } from "@shopify/flash-list";
 
@@ -23,7 +22,6 @@ const SubjectsScreen = ({ navigation }) => {
     const screenPadding = StylesContainers.screen.padding
     const [subjects, setSubjects] = useState([])
     const [loading, setLoading] = useState(true)
-    const [user, setUser] = useState(null)
     
     const [modalEdit, setModalEdit] = useState(false)
     const [modalAdd, setModalAdd] = useState(false)
@@ -40,22 +38,9 @@ const SubjectsScreen = ({ navigation }) => {
 
     useEffect(
         () => {
-            getAuth()
             refresh()
         }, []
     )
-
-    const getAuth = async () => {
-        try {
-            let value = await AsyncStorage.getItem('auth')
-            if (value !== null) {
-                setUser(value)
-            }
-            // else console.log('user not auth')
-        } catch (e) {
-            alert('ERROR: getAuth');
-        }
-    }
 
     const getAllSubjects = () => {
         setSubjects([])
@@ -124,7 +109,7 @@ const SubjectsScreen = ({ navigation }) => {
                 data={subjects}
                 estimatedItemSize={80}
                 keyExtractor={(item) => item.id}
-                contentContainerStyle={{padding: screenPadding, paddingBottom: screenPadding*3}}
+                contentContainerStyle={{paddingBottom: screenPadding*3}}
                 refreshControl={<RefreshControl refreshing={loading} onRefresh={refresh}/>}
                 ListEmptyComponent={() => (
                     <View style={[StylesContainers.screen, StylesContainers.default]}>
@@ -142,7 +127,6 @@ const SubjectsScreen = ({ navigation }) => {
                             <Subject
                                 title={item.title}
                                 createdBy={item.createdBy}
-                                // user={user}
                                 edit={() => {setItemId(item.id); setItemTitle(item.title); setModalEdit(true)}}
                                 setDelete={() => deleteSubject(item.id)}
                             />
