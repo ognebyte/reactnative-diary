@@ -25,7 +25,7 @@ const App = () => {
         <SafeAreaView style={{ flex: 1, backgroundColor: NavigationTheme.colors.card }}>
             <StatusBar
                 backgroundColor={NavigationTheme.colors.card}
-                barStyle={NavigationTheme.dark ? 'light-content' : 'dark-content'}
+                barStyle={'dark-content'}
             />
             <GestureHandlerRootView style={{flex: 1}}>
                 <PaperProvider>

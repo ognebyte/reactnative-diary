@@ -30,17 +30,12 @@ const ModalAdd = (props) => {
     const checkTitle = () => {
         if(inputTitle.length === 0) alert('Заголовок пустой!')
         else {
-            if(props.week) {
-                props.addInputs(inputTitle, saturday ? 1 : 0, sunday ? 1 : 0)
-                setModal(false)
-            } else {
-                let datetime = null
-                if(date) {
-                    datetime = `${!date ? '' : moment(date).format('YYYY-MM-DD')} ${!time ? '00:00:00' : moment(time).format('HH:mm:ss')}`
-                }
-                props.addInputs(inputTitle, inputDescription, inputGrade, datetime)
-                setModal(false)
+            let datetime = null
+            if(date) {
+                datetime = `${!date ? '' : moment(date).format('YYYY-MM-DD')} ${!time ? '23:59:00' : moment(time).format('HH:mm:ss')}`
             }
+            props.addInputs(inputTitle, inputDescription, inputGrade, datetime)
+            setModal(false)
         }
     }
 
@@ -105,11 +100,11 @@ const ModalAdd = (props) => {
                                             <TouchableOpacity onPress={() => {setModalTime(true)}}
                                                 style={[StylesTexts.inputExtra]}
                                             >
-                                                <Text style={[!time || moment(time).format('HH:mm') == '00:00' ? StylesTexts.fadeColor : null]}>
-                                                    {!time ? ' Время: 00:00 ' : ` Время: ${moment(time).format('HH:mm')} `}
+                                                <Text style={[!time || moment(time).format('HH:mm') == '23:59' ? StylesTexts.fadeColor : null]}>
+                                                    {!time ? ' Время: 23:59 ' : ` Время: ${moment(time).format('HH:mm')} `}
                                                 </Text>
                                                 {
-                                                    !time || moment(time).format('HH:mm') == '00:00' ? null : 
+                                                    !time || moment(time).format('HH:mm') == '23:59' ? null : 
                                                     <TouchableOpacity onPress={() => setTime(null)}>
                                                         <Close size={22} color={'black'}/>
                                                     </TouchableOpacity>
@@ -159,7 +154,7 @@ const ModalAdd = (props) => {
                                     />
                                 </View>
                             }
-                            { !props.week ? null :
+                            {/* { !props.week ? null :
                                 <View>
                                     <View style={{flexDirection: 'row', alignItems: 'center'}}>
                                         <Text style={[StylesTexts.default, {color: saturday ? '#000000' : StylesTexts.fadeColor.color}]}> Суббота </Text>
@@ -180,7 +175,7 @@ const ModalAdd = (props) => {
                                         />
                                     </View>
                                 </View>
-                            }
+                            } */}
                         </View>
 
                         <View style={{flexDirection: 'row', width: '100%', marginTop: 100, gap: 10}}>

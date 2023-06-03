@@ -1,6 +1,36 @@
 import { StyleSheet } from 'react-native';
+import Colors from '../style/colors';
 
 export default StyleSheet.create({
+    weekDay: {
+        flexDirection: 'row',
+        minHeight: 50,
+        gap: 20,
+        marginBottom: 20,
+    },
+    weekDayLeft: {
+        justifyContent: 'center', alignItems: 'center'
+    },
+    dayItemContainer: {
+        flex: 1,
+        borderRadius: 15,
+        backgroundColor: Colors.grey,
+        overflow: 'hidden'
+    },
+    dayItem: {
+        padding: 10,
+        gap: 10,
+    },
+    daySubject: {
+    },
+    dayInfoContainer: {
+        flexDirection: 'row',
+    },
+    dayInfo: {
+        flex: 1,
+        alignItems: 'center'
+    },
+
     tabLabel: {
         justifyContent: 'center', alignItems: 'center',
         width: 30, height: 30, marginVertical: 4,

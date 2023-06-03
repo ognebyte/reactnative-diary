@@ -13,7 +13,7 @@ export default ({
     link: '#6E7AFF',
     light: '#FFFFFF',
 
-    darkFade: '#00000080'
+    darkFade: '#00000080',
 
     // lightColor: { color: "#ffffff" },
     // linkColor: { color: '#6E7AFF' },

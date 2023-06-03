@@ -1,7 +1,8 @@
 import React, { useState, useRef, useEffect } from "react";
 import * as SQLite from 'expo-sqlite'
-import { Modal, View, TextInput, Text, TouchableOpacity, KeyboardAvoidingView, ScrollView, RefreshControl } from 'react-native';
+import { Modal, View, Text, TouchableOpacity, KeyboardAvoidingView, ScrollView, RefreshControl } from 'react-native';
 import { FlashList } from "@shopify/flash-list";
+import { FAB } from 'react-native-paper';
 
 import StylesContainers from '../style/containers'
 import StylesButtons from '../style/buttons'
@@ -44,11 +45,7 @@ const Notes = () => {
         db.transaction(tx =>
             tx.executeSql(`SELECT * FROM ${table} ORDER BY id DESC`, [],
                 (_, res) => {
-                    var rows = []
-                    for (let i = 0; i < res.rows.length; i++) {
-                        rows.push(res.rows.item(i))
-                    }
-                    setNotes(rows)
+                    setNotes(res.rows._array)
                 },
                 (_, error) => console.log(error)
             )
@@ -166,16 +163,12 @@ const Notes = () => {
             }
 
             {/* Button Add */}
-            <View style={[StylesButtons.buttonFooter, modalAdd ? {display: 'none'} : {display: 'flex'}]}>
-                <TouchableOpacity
-                    activeOpacity={ 0.5 }
-                    style={StylesButtons.addButton}
-                    onPress={() => setModalAdd(true)}
-                >
-                    <IconPlus size={30} color={'black'}/>
-                    <Text style={StylesTexts.small}> Добавить новую заметку </Text>
-                </TouchableOpacity>
-            </View>
+            <FAB icon={IconPlus}
+                size='medium'
+                color='black'
+                style={[StylesButtons.active, StylesButtons.buttonFloat]}
+                onPress={() => setModalAdd(true)}
+            />
         </View>
     );
 };

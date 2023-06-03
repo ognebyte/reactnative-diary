@@ -5,18 +5,15 @@ import { Animated, Easing, View, Dimensions } from 'react-native';
 
 import NavigationTheme from './style/navigation';
 import StylesContainers from './style/containers';
-import StylesTexts from './style/texts';
 
 import Home from './Home';
-import Setting from './Setting';
-import Profile from './Profile';
+import Classes from './Classes';
 import Calendar from './Calendar';
 
-import IconInbox from 'assets/svg/inbox';
 import IconHome from 'assets/svg/home';
 import IconCalendar from 'assets/svg/calendar';
 import IconWrench from 'assets/svg/wrench';
-import IconUser from 'assets/svg/user';
+import IconStudent from 'assets/svg/student';
 
 const Tab = createBottomTabNavigator();
 
@@ -70,15 +67,13 @@ const App = () => {
                                     {
                                         route.name == 'Home' ?
                                         <IconHome size={size} color={color}/>
-                                        // : (route.name == 'Notification') ?
-                                        // <IconInbox size={size} color={color}/>
                                         : (route.name == 'Calendar') ?
                                         <IconCalendar size={size} color={color}/>
                                         : (route.name == 'Setting') ?
                                         <IconWrench size={size} color={color}/>
-                                        : (route.name == 'Profile') ?
-                                        <IconUser size={size} color={color}/>
-                                        : "null"
+                                        : (route.name == 'Classes') ?
+                                        <IconStudent size={size} color={color}/>
+                                        : null
                                     }
                                 </View>
                             </View>
@@ -90,24 +85,14 @@ const App = () => {
                 <Tab.Screen name='Home' options={{headerShown: false}}
                     children={() => <Home />}
                 />
-
-                {/* <Tab.Screen name='Notification'
-                    children={() => <Notification removeBarBadge={removeBarBadge}/>}
-                    options={{ tabBarBadge: likeCount > 0 ? likeCount : null, }}
-                /> */}
                 
                 <Tab.Screen name='Calendar' options={{title: 'Календарь'}}
                     children={() => <Calendar />}
                 />
                 
-                {/* <Tab.Screen name='Setting' options={{title: 'Настройки'}}
-                    children={() => <Setting />}
-                /> */}
-                
-                <Tab.Screen name='Profile' options={{title: 'Профиль', headerShown: false}}
-                    children={() => <Profile />}
+                <Tab.Screen name='Classes' options={{title: 'Класс', headerShown: false}}
+                    children={() => <Classes />}
                 />
-
             </Tab.Navigator> 
         </NavigationContainer>
     );

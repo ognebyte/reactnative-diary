@@ -10,7 +10,12 @@ export default StyleSheet.create({
         padding: 15,
         paddingTop: 30,
         backgroundColor: '#ffffff',
-        borderRadius: 10,
+        borderTopLeftRadius: 10, borderTopRightRadius: 10,
+        overflow: 'hidden'
+    },
+    modalDefault: {
+        backgroundColor: '#ffffff',
+        borderTopLeftRadius: 10, borderTopRightRadius: 10,
         overflow: 'hidden'
     },
     modalHandle: {

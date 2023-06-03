@@ -13,7 +13,7 @@ const ModalDefault = ({modal, hideModal, content}) => {
             backdropOpacity={0.5}
             style={{justifyContent: 'flex-end', margin: 0}}
         >
-            <View style={[StylesContainers.modal]}>
+            <View style={[StylesContainers.modalDefault]}>
                 <View style={StylesContainers.modalHandle}/>
                 {content}
             </View>

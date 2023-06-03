@@ -103,7 +103,7 @@ const SubmissionGrade = ({ route, navigation }) => {
                         <Text style={[StylesTexts.medium, {color: Colors.darkFade}]}>
                             {moment(convertToTime(submission.submittedAt)).format('DD MMMM, HH:mm')}
                         </Text>
-                        : moment(convertToTime(submission.submittedAt)).isAfter(moment(contextAssignment.dueDate)) ?
+                        : !moment(convertToTime(submission.submittedAt)).isAfter(moment(contextAssignment.dueDate)) ?
                         <Text style={[StylesTexts.medium, {color: Colors.darkFade}]}>
                             Сдано заранее: {moment(convertToTime(submission.submittedAt)).format('DD MMMM, HH:mm')}
                         </Text>

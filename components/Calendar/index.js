@@ -65,7 +65,6 @@ const CalendarScreen = () => {
             tx.executeSql(`SELECT
                     ${tableSubjects}.id AS subjects_id,
                     ${tableSubjects}.title AS subjects_title,
-                    ${tableSubjects}.createdBy AS subjects_createdBy,
 
                     ${tableAssignments}.id AS subject_id,
                     ${tableAssignments}.subject_id AS subject_subject_id,
@@ -216,15 +215,18 @@ const CalendarScreen = () => {
                 loadingDay ? <ActivityIndicator animating={true} size={'large'} color={'black'} style={StylesContainers.screen}/>
                 :
                 <View style={{alignItems: 'center', gap: 30}}>
-                    {/* <View style={[StylesContainers.alert, {width: '100%', padding: 10}]}>
-                        <Text style={StylesTexts.default}> {moment(selectedDay).format('D MMMM')} </Text>
-                    </View> */}
-                    <View style={{flex: 1, width: '100%', height: 105 * (tasks?.length + 1)}}>
+                    <View style={{flex: 1, width: '100%', height: 107 * (tasks?.length + 1)}}>
                         <FlashList
                             data={tasks}
                             estimatedItemSize={105}
                             scrollEnabled={false}
-                            ListEmptyComponent={() => <Text style={[StylesContainers.alert, StylesTexts.default, {padding: 40}]}> Ничего не запланировано </Text>}
+                            ListEmptyComponent={() => (
+                                <View style={{justifyContent: 'center', alignItems: 'center', paddingBottom: 10}}>
+                                    <Text style={[StylesContainers.alert, StylesTexts.default, {padding: 40}]}>
+                                        Ничего не запланировано
+                                    </Text>
+                                </View>
+                            )}
                             renderItem={({item}) => (
                                 <TouchableOpacity key={item.subject_id}
                                     activeOpacity={1}

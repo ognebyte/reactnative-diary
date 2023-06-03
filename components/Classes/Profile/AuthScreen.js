@@ -5,12 +5,12 @@ import { FIREBASE_AUTH, FIREBASE_DB } from 'config/firebase'
 import { View, TextInput, Text, TouchableOpacity, KeyboardAvoidingView, ActivityIndicator, ScrollView, Switch } from 'react-native';
 import Modal from "react-native-modal";
 
-import StylesContainers from '../style/containers';
-import StylesButtons from '../style/buttons';
-import StylesTexts from '../style/texts';
+import StylesContainers from 'components/style/containers';
+import StylesButtons from 'components/style/buttons';
+import StylesTexts from 'components/style/texts';
 import Styles from './styles'
 
-import Loading from "../Modals/Loading";
+import Loading from "components/Modals/Loading";
 
 import EyeClosed from "assets/svg/eyeClosed";
 import EyeOpen from "assets/svg/eyeOpen";
@@ -31,32 +31,34 @@ const AuthScreen = ({ navigation }) => {
 
 
     const auth = async (isAuth) => {
-        if(email.length === 0) return alert("Введите почту")
+        if (email.length === 0) return alert("Введите почту")
         
-        if (isAuth) {
+        if (isAuth) { // Проверка на авторизуется ли пользователь или регистрируется
             setLoading(true)
+            // Вход существующего пользователя с указанным адресом электронной почты и паролем
             await signInWithEmailAndPassword(FIREBASE_AUTH, email, password)
-            .then(() => navigation.navigate('ProfileScreen'))
+            .then(() => navigation.goBack())
             .catch(error => alert(error.message));
             setLoading(false)
         } else {
-            if (firstname.length === 0 && firstname.length === 0) return alert('Имя или фамилия не были записаны')
+            if (firstname.length === 0 && lastname.length === 0) return alert('Имя или фамилия не были записаны')
             if (password.length < 8) return alert('Длина пароля меньше 8!')
 
             setLoading(true)
+            // Регистрация нового пользователя с указанным адресом электронной почты и паролем
             await createUserWithEmailAndPassword(FIREBASE_AUTH, email, password)
             .then(async () => {
+                // Добавления пользователя в базу данных
                 await setDoc(doc(collection(FIREBASE_DB, 'users'), email), {firstname: firstname, lastname: lastname, birthday: null});
-                navigation.navigate('ProfileScreen');
+                navigation.goBack();
             })
             .catch(error => alert(error.message));
             setLoading(false)
         }
-            
     }
     
     const resetPassword = async () => {
-        if(email.length > 0) {
+        if (email.length > 0) {
             setLoading(true)
             await sendPasswordResetEmail(FIREBASE_AUTH, email)
             .then(() => alert('Запрос для сброса пароля отправлено!'))

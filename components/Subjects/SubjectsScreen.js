@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import * as SQLite from 'expo-sqlite'
 import { Modal, View, TextInput, Text, TouchableOpacity, KeyboardAvoidingView, ScrollView, RefreshControl } from 'react-native';
 import { FlashList } from "@shopify/flash-list";
-import { TouchableRipple, FAB } from 'react-native-paper';
+import { FAB } from 'react-native-paper';
 
 import StylesContainers from '../style/containers'
 import StylesButtons from '../style/buttons'
@@ -19,7 +19,7 @@ const SubjectsScreen = ({ navigation }) => {
     const db = SQLite.openDatabase('diary.db')
     const table = 'subjects'
     const tableAssignments = 'assignments'
-    const tableWeek = 'week'
+    const tableSchedule = 'schedule'
     const screenPadding = StylesContainers.screen.padding
     const [subjects, setSubjects] = useState([])
     const [loading, setLoading] = useState(true)
@@ -82,7 +82,7 @@ const SubjectsScreen = ({ navigation }) => {
             );
         })
         db.transaction(tx => {tx.executeSql(`DELETE FROM ${tableAssignments} WHERE subject_id = ?`, [id])})
-        db.transaction(tx => {tx.executeSql(`DELETE FROM ${tableWeek} WHERE subject_id = ?`, [id])})
+        db.transaction(tx => {tx.executeSql(`DELETE FROM ${tableSchedule} WHERE subject_id = ?`, [id])})
     }
 
     const addSubject = (title) => {

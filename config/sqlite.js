@@ -1,16 +1,11 @@
 import * as SQLite from 'expo-sqlite';
 
-const tableNotes = 'notes';
-const tableSubjects = 'subjects';
-const tableAssignments = 'assignments';
-const tableSchedule = 'schedule';
-const tableDays = 'days';
 const db = SQLite.openDatabase('diary.db');
 
 const Sqlite = () => {
   db.transaction(tx => {
     tx.executeSql(
-      `CREATE TABLE IF NOT EXISTS ${tableNotes}
+      `CREATE TABLE IF NOT EXISTS notes
       (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         title TEXT,
@@ -18,15 +13,14 @@ const Sqlite = () => {
       )`
     );
     tx.executeSql(
-      `CREATE TABLE IF NOT EXISTS ${tableSubjects}
+      `CREATE TABLE IF NOT EXISTS subjects
       (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
-        title TEXT,
-        createdBy TEXT
+        title TEXT
       )`
     );
     tx.executeSql(
-      `CREATE TABLE IF NOT EXISTS ${tableAssignments}
+      `CREATE TABLE IF NOT EXISTS assignments
       (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         subject_id INTEGER,
@@ -39,26 +33,15 @@ const Sqlite = () => {
       )`
     );
     tx.executeSql(
-      `CREATE TABLE IF NOT EXISTS ${tableSchedule}
+      `CREATE TABLE IF NOT EXISTS schedule
       (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
-        title TEXT,
-        saturday INTEGER
-      )`
-    );
-    tx.executeSql(
-      `CREATE TABLE IF NOT EXISTS ${tableDays}
-      (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        schedule_id INTEGER,
         subject_id INTEGER,
+        week INTEGER,
         place INTEGER,
-        weekNumber INTEGER,
-        timeStart TEXT,
-        timeEnd TEXT,
         courseType TEXT,
-        instructor TEXT,
         location TEXT,
+        instructor TEXT,
         note TEXT
       )`
     );

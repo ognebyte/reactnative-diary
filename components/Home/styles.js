@@ -1,27 +1,23 @@
-import { StyleSheet, Dimensions } from 'react-native';
+import { StyleSheet } from 'react-native';
 
 import NavigationTheme from '../style/navigation'
 import Colors from '../style/colors'
-const windowDimensions = Dimensions.get('window');
-const windowHeight = windowDimensions.height
 
 export default StyleSheet.create({
     background: {
-        position: 'absolute',
         top: 0,
         width: '100%',
-        height: windowHeight / 100 * 15,
+        paddingBottom: 10,
     },
     content: {
         flex: 1,
         width: '100%',
-        paddingTop: 30,
-        marginTop: windowHeight / 100 * 12,
+        paddingTop: 30, paddingBottom: 100,
+        marginTop: -10,
         gap: 40,
+        elevation: 2,
+        borderTopLeftRadius: 10, borderTopRightRadius: 10,
         backgroundColor: NavigationTheme.colors.background,
-        borderTopLeftRadius: 30,
-        borderTopRightRadius: 30,
-        overflow: 'hidden',
     },
 
     scrollViewItemsContainer: {

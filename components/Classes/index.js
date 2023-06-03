@@ -3,7 +3,7 @@ import { CardStyleInterpolators, createStackNavigator } from "@react-navigation/
 import { doc, getDocs, deleteDoc, collection, query, where } from 'firebase/firestore';
 import { FIREBASE_DB } from 'config/firebase'
 
-import { Easing, Text } from 'react-native';
+import { Easing } from 'react-native';
 
 import NavigationTheme from '../style/navigation';
 import Colors from '../style/colors';
@@ -19,6 +19,9 @@ import AssignmentSettings from './AssignmentSettings'
 import SubmissionsScreen from './SubmissionsScreen'
 import SubmissionAdd from './SubmissionAdd'
 import SubmissionGrade from './SubmissionGrade'
+
+import AuthScreen from './Profile/AuthScreen';
+import ProfileSetting from './Profile/ProfileSetting';
 
 const Stack = createStackNavigator();
 
@@ -89,7 +92,7 @@ const ClassesStack = () => {
 
                 headerStyle: { backgroundColor: NavigationTheme.colors.headerBackground },
             }}>
-                <Stack.Screen name="ClassesScreen" component={ClassesScreen} options={{title: 'Классы'}} />
+                <Stack.Screen name="ClassesScreen" component={ClassesScreen} options={{title: 'Классы', headerShown: false}} />
                 <Stack.Screen name="ClassAdd" component={ClassAdd} options={{title: 'Создание класса'}} />
                 <Stack.Screen name="ClassScreen" component={ClassScreen} options={{title: 'Класс'}} />
                 <Stack.Screen name="ClassSettings" component={ClassSettings} options={{title: 'Настройки'}} />
@@ -107,6 +110,15 @@ const ClassesStack = () => {
                     options={{headerTitleStyle: {display: 'none'}}}
                 />
                 <Stack.Screen name="SubmissionGrade" component={SubmissionGrade} options={{title: 'Оценка задания'}}/>
+
+                <Stack.Screen name="ProfileSetting" component={ProfileSetting} options={{title: 'Профиль'}} />
+                <Stack.Screen name="AuthScreen" component={AuthScreen}
+                    options={{
+                        title: 'Авторизация',
+                        headerStyle: {backgroundColor: 'transparent'},
+                        headerTitleStyle: {display: 'none'},
+                    }}
+                />
             </Stack.Navigator>
         </Context.Provider>
     );

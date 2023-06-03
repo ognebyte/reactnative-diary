@@ -9,6 +9,7 @@ import Colors from '../style/colors';
 import StylesContainers from '../style/containers'
 import StylesButtons from '../style/buttons'
 import StylesTexts from '../style/texts'
+import StylesSchedule from '../Schedule/styles';
 import Styles from './styles';
 
 import ModalEdit from '../Modals/ModalEdit';
@@ -22,6 +23,8 @@ const HomeRoute = ({ navigation }) => {
     const db = SQLite.openDatabase('diary.db')
     const [tasks, setTasks] = useState([])
     const [notes, setNotes] = useState([])
+    const [schedule, setSchedule] = useState([])
+    const [loading, setLoading] = useState(true)
     const [modalEdit, setModalEdit] = useState(false)
     const [modalEditNote, setModalEditNote] = useState(false)
     const [selectedAssignment, setSelectedAssignment] = useState()
@@ -36,11 +39,14 @@ const HomeRoute = ({ navigation }) => {
         undone: false,
     })
 
-    const [loadingCourse, setLoadingCourse] = useState(true)
-
     const refresh = () => {
+        setLoading(true)
         loadTasks()
         loadNote()
+        loadSchedule()
+        setTimeout(() => {
+            setLoading(false)
+        }, 500)
     };
 
     useEffect(() => {
@@ -109,6 +115,22 @@ const HomeRoute = ({ navigation }) => {
         )
     }
 
+    const loadSchedule = () => {
+        db.transaction(tx =>
+            tx.executeSql(
+                `SELECT schedule.*, subjects.title FROM schedule
+                JOIN subjects ON schedule.subject_id = subjects.id
+                WHERE schedule.week = ?
+                ORDER BY place`
+                , [moment().format('d')],
+                (_, res) => {
+                    setSchedule(res.rows._array)
+                },
+                (_, error) => console.log(error)
+            )
+        )
+    }
+    
     const loadNote = () => {
         setLoadingNote(true)
         setNotes([])
@@ -152,7 +174,9 @@ const HomeRoute = ({ navigation }) => {
     }
 
     return (
-        <ScrollView refreshControl={<RefreshControl refreshing={loadingTasks} onRefresh={refresh}/>}>
+        <ScrollView refreshControl={<RefreshControl refreshing={loading} onRefresh={refresh}/>}
+            showsVerticalScrollIndicator={false}
+        >
             {
                 !modalEdit ? null :
                 <ModalEdit show={() => setModalEdit(false)}
@@ -177,18 +201,73 @@ const HomeRoute = ({ navigation }) => {
             <View style={StylesContainers.default}>
                 <View style={[Styles.background, {backgroundColor: StylesTexts.linkColor.color}]}>
                     <View style={{margin: 30}}>
-                        <Text style={[StylesTexts.big, StylesTexts.lightColor]}> Сегодня: {moment().format('DD MMMM')} </Text>
+                        <Text style={[StylesTexts.big, StylesTexts.lightColor]}>
+                            Сегодня: {moment().format('dddd, D MMMM')}
+                        </Text>
                     </View>
                 </View>
                 <View style={[Styles.content]}>
 
-                    <TouchableOpacity
-                        activeOpacity={ 0.5 }
-                        style={[StylesButtons.default, StylesButtons.buttonsDefault, {backgroundColor: Colors.grey, alignSelf: 'center'}]}
-                        onPress={() => navigation.navigate("ClassesStack")}
-                    >
-                        <Text style={StylesTexts.default}> Классы </Text>
-                    </TouchableOpacity>
+                    <View style={{padding: 15, gap: 10}}>
+                        <Text style={[StylesTexts.big]}> Расписание </Text>
+                        <View style={Styles.scrollViewItemsContainer}>
+                            <FlashList
+                                data={schedule}
+                                keyExtractor={(item) => item.id}
+                                estimatedItemSize={100}
+                                contentContainerStyle={{padding: StylesContainers.screen.padding}}
+                                ListEmptyComponent={() => (
+                                    <View style={StylesContainers.default}>
+                                        <View style={[StylesContainers.alert, {width: 200, height: 110}]}>
+                                            <Text style={StylesTexts.default}>
+                                                Нет записей
+                                            </Text>
+                                        </View>
+                                    </View>
+                                )}
+                                renderItem={({item}) => (
+                                    <View style={{flexDirection: 'row', marginBottom: 15, alignItems: 'center', gap: 15}}>
+                                        <Text style={StylesTexts.default}>{item.place}</Text>
+                                        <View style={StylesSchedule.dayItemContainer}>
+                                            <View style={StylesSchedule.dayItem}>
+                                                <View style={StylesSchedule.daySubject}>
+                                                    <Text style={StylesTexts.default} numberOfLines={1}>{item.title}</Text>
+                                                </View>
+                                                <View style={StylesSchedule.dayInfoContainer}>
+                                                    { !item.courseType ? null :
+                                                        <View style={StylesSchedule.dayInfo}>
+                                                            <Text style={[StylesTexts.small, {color: Colors.darkFade}]}>Тип занятия</Text>
+                                                            <Text style={StylesTexts.default} numberOfLines={1}>{item.courseType}</Text>
+                                                        </View>
+                                                    }
+                                                    { !item.location ? null :
+                                                        <View style={StylesSchedule.dayInfo}>
+                                                            <Text style={[StylesTexts.small, {color: Colors.darkFade}]}>Кабинет</Text>
+                                                            <Text style={StylesTexts.default} numberOfLines={1}>{item.location}</Text>
+                                                        </View>
+                                                    }
+                                                    { !item.instructor ? null :
+                                                        <View style={[StylesSchedule.dayInfo, {flex: 2}]}>
+                                                            <Text style={[StylesTexts.small, {color: Colors.darkFade}]}>Преподаватель</Text>
+                                                            <Text style={StylesTexts.default} numberOfLines={1}>{item.instructor}</Text>
+                                                        </View>
+                                                    }
+                                                </View>
+                                            </View>
+                                        </View>
+                                    </View>
+                                )}
+                            />
+                            <TouchableRipple style={Styles.buttonFooterContainer}
+                                onPress={() => navigation.navigate("ScheduleStack")}
+                            >
+                                <View style={Styles.buttonFooter}>
+                                    <Text style={StylesTexts.default}> Посмотреть все </Text>
+                                    <Chevron size={20} color={'black'}/>
+                                </View>
+                            </TouchableRipple>
+                        </View>
+                    </View>
 
                     <View style={{padding: 15, gap: 10}}>
                         <Text style={[StylesTexts.big]}> Задачи </Text>
@@ -239,7 +318,7 @@ const HomeRoute = ({ navigation }) => {
                                         !loadingTasks ? null :
                                         <ActivityIndicator size={30} color={'black'} style={Styles.loading} />
                                     }
-                                    { tasks.length === 0 ?
+                                    { tasks?.length === 0 ?
                                         <View style={[StylesContainers.default, {marginVertical: 5}]}>
                                             <View style={[StylesContainers.alert, {width: 200, height: 110}]}>
                                                 <Text style={StylesTexts.default}>
@@ -289,7 +368,7 @@ const HomeRoute = ({ navigation }) => {
                                         !loadingNote ? null :
                                         <ActivityIndicator size={30} color={'black'} style={Styles.loading} />
                                     }
-                                    { notes.length === 0 ?
+                                    { notes?.length === 0 ?
                                         <View style={[StylesContainers.default, {marginVertical: 5}]}>
                                             <View style={[StylesContainers.alert, {width: 200, height: 110}]}>
                                                 <Text style={StylesTexts.default}>
@@ -341,24 +420,6 @@ const HomeRoute = ({ navigation }) => {
                             </View>
                         </View>
                     </View>
-                    
-                    {/* <View style={{gap: 20}}> */}
-                        {/* <TouchableOpacity
-                            activeOpacity={ 0.5 }
-                            style={[StylesButtons.default, StylesButtons.buttonsDefault, {backgroundColor: '#000000'}]}
-                            onPress={() => navigation.navigate("SubjectsStack")}
-                        >
-                            <Text style={[StylesTexts.default, StylesTexts.lightColor]}> Предметы </Text>
-                        </TouchableOpacity>
-                        
-                        <TouchableOpacity
-                            activeOpacity={ 0.5 }
-                            style={[StylesButtons.default, StylesButtons.buttonsDefault, {backgroundColor: '#000000'}]}
-                            onPress={() => navigation.navigate("ScheduleStack")}
-                        >
-                            <Text style={[StylesTexts.default, StylesTexts.lightColor]}> Расписание </Text>
-                        </TouchableOpacity> */}
-                    {/* </View> */}
                 </View>
             </View>
         </ScrollView>

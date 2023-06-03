@@ -24,7 +24,7 @@ const ModalEdit = (props) => {
     const [inputDescription, setInputDescription] = useState(props.description)
     const [inputGrade, setInputGrade] = useState(props.grade)
     const inputDeadline = props.deadline
-    const [saturday, setSaturday] = useState(props.saturday == 1 ? true : false)
+    // const [saturday, setSaturday] = useState(props.saturday == 1 ? true : false)
 
     const [isComplete, setIsComplete] = useState(props.isComplete ? true : false)
     const [titleEdit, setTitleEdit] = useState(false)
@@ -39,17 +39,14 @@ const ModalEdit = (props) => {
             inputDescription != props.description ||
             inputGrade != props.grade ||
             date != props.deadline ||
-            time != props.deadline ||
-            saturday != props.saturday
+            time != props.deadline
         ) setEdited(true)
         else setEdited(false)
-    }, [inputTitle, inputDescription, inputGrade, date, time, saturday, isComplete])
+    }, [inputTitle, inputDescription, inputGrade, date, time, isComplete])
 
     return (
         <Modal isVisible={modal}
             onModalHide={() => props.show(e)}
-            // swipeDirection={'right'}
-            // onSwipeComplete={() => setModal(false)}
             backdropOpacity={0.5}
             animationOutTiming={500}
             backdropTransitionOutTiming={500}
@@ -118,11 +115,11 @@ const ModalEdit = (props) => {
                                             <TouchableOpacity onPress={() => {setModalTime(true)}}
                                                 style={[StylesTexts.inputExtra]}
                                             >
-                                                <Text style={[!time || moment(time).format('HH:mm') == '00:00' ? StylesTexts.fadeColor : null]}>
-                                                    {!time ? ' Время: 00:00 ' : ` Время: ${moment(time).format('HH:mm')} `}
+                                                <Text style={[!time || moment(time).format('HH:mm') == '23:59' ? StylesTexts.fadeColor : null]}>
+                                                    {!time ? ' Время: 23:59 ' : ` Время: ${moment(time).format('HH:mm')} `}
                                                 </Text>
                                                 {
-                                                    !time || moment(time).format('HH:mm') == '00:00' ? null : 
+                                                    !time || moment(time).format('HH:mm') == '23:59' ? null : 
                                                     <TouchableOpacity onPress={() => setTime(null)}>
                                                         <Close size={22} color={'black'}/>
                                                     </TouchableOpacity>
@@ -168,7 +165,7 @@ const ModalEdit = (props) => {
                                     />
                                 </View>
                             }
-                            { !props.schedule ? null :
+                            {/* { !props.schedule ? null :
                                 <View style={{alignItems: 'center'}}>
                                     <Text style={[StylesTexts.default, {color: saturday ? '#000000' : StylesTexts.fadeColor.color}]}> Суббота </Text>
                                     <Switch style={{margin: 0, padding: 0}}
@@ -178,7 +175,7 @@ const ModalEdit = (props) => {
                                         value={saturday}
                                     />
                                 </View>
-                            }
+                            } */}
                         </View>
                         
                         <View style={{flexDirection: 'row', width: '100%', marginTop: 60, gap: 10}}>
@@ -192,15 +189,11 @@ const ModalEdit = (props) => {
                                 onPress={() => {
                                     if(inputTitle.length === 0) alert('Заголовок пустой!')
                                     else {
-                                        if (props.schedule) {
-                                            props.saveInputs(inputTitle, saturday? 1 : 0)
-                                        } else {
-                                            let datetime = null
-                                            if(date) {
-                                                datetime = `${!date ? '' : moment(date).format('YYYY-MM-DD')} ${!time ? '00:00:00' : moment(time).format('HH:mm:ss')}`
-                                            }
-                                            props.saveInputs(inputTitle, inputDescription, inputGrade, datetime, isComplete)
+                                        let datetime = null
+                                        if(date) {
+                                            datetime = `${!date ? '' : moment(date).format('YYYY-MM-DD')} ${!time ? '23:59:00' : moment(time).format('HH:mm:ss')}`
                                         }
+                                        props.saveInputs(inputTitle, inputDescription, inputGrade, datetime, isComplete)
                                         setEdited(!edited)
                                         setE(true)
                                     }

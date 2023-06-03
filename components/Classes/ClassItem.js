@@ -31,23 +31,29 @@ const ClassesItem = ({ item, refresh }) => {
     const user = item.user
 
     const clearCollection = async (bool) => {
-        ['members', 'subjects', 'assignments', 'comments', 'submissions'].map(async (value) => {
-            var q
-            if (bool) {
-                q = query(collection(FIREBASE_DB, value),
+        if (bool) {
+            ['assignments', 'comments', 'members', 'submissions'].map(async (value) => {
+                var q = query(collection(FIREBASE_DB, value),
                     where('subjectId', '==', subject.id)
                 );
-            } else {
-                q = query(collection(FIREBASE_DB, value),
+                const querySnapshot = await getDocs(q);
+                querySnapshot.forEach(async (doc) => {
+                    await deleteDoc(doc.ref);
+                });
+            })
+            await deleteDoc(doc(collection(FIREBASE_DB, 'subjects'), subject.id))
+        } else {
+            ['comments', 'members', 'submissions'].map(async (value) => {
+                var q = query(collection(FIREBASE_DB, value),
                     where('userId', '==', contextCurrentUser.email),
                     where('subjectId', '==', subject.id)
                 );
-            }
-            const querySnapshot = await getDocs(q);
-            querySnapshot.forEach(async (doc) => {
-                await deleteDoc(doc.ref);
-            });
-        })
+                const querySnapshot = await getDocs(q);
+                querySnapshot.forEach(async (doc) => {
+                    await deleteDoc(doc.ref);
+                });
+            })
+        }
         refresh()
     }
 

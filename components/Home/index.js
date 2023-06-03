@@ -9,7 +9,6 @@ import HomeScreen from './HomeScreen';
 import Notes from '../Notes';
 import SubjectsStack from '../Subjects'
 import ScheduleStack from '../Schedule'
-import ClassesStack from '../Classes'
 
 const Stack = createStackNavigator();
 
@@ -40,7 +39,6 @@ const HomeStack = () => {
             <Stack.Screen name="Notes" component={Notes} options={{title: 'Заметки', headerShown: true}} />
             <Stack.Screen name="SubjectsStack" component={SubjectsStack} options={{title: 'Предметы'}} />
             <Stack.Screen name="ScheduleStack" component={ScheduleStack} options={{title: 'Расписание'}} />
-            <Stack.Screen name="ClassesStack" component={ClassesStack} options={{title: 'Курсы'}} />
         </Stack.Navigator>
     );
 };
