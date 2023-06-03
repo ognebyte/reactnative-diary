@@ -34,14 +34,7 @@ const ModalEdit = (props) => {
     const [time, setTime] = useState(inputDeadline)
 
     useEffect(() => {
-        if (
-            inputTitle != props.title ||
-            inputDescription != props.description ||
-            inputGrade != props.grade ||
-            date != props.deadline ||
-            time != props.deadline
-        ) setEdited(true)
-        else setEdited(false)
+        setEdited(true)
     }, [inputTitle, inputDescription, inputGrade, date, time, isComplete])
 
     return (
@@ -80,7 +73,7 @@ const ModalEdit = (props) => {
                                         maxLength={50}
                                     />
                                 </View>
-                                { props.isComplete === null ? null :
+                                { props.isComplete !== null ? null :
                                     <Checkbox status={isComplete ? 'checked' : 'unchecked'}
                                         onPress={() => setIsComplete(!isComplete)}
                                     />

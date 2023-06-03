@@ -12,7 +12,6 @@ import Calendar from './Calendar';
 
 import IconHome from 'assets/svg/home';
 import IconCalendar from 'assets/svg/calendar';
-import IconWrench from 'assets/svg/wrench';
 import IconStudent from 'assets/svg/student';
 
 const Tab = createBottomTabNavigator();
@@ -69,8 +68,6 @@ const App = () => {
                                         <IconHome size={size} color={color}/>
                                         : (route.name == 'Calendar') ?
                                         <IconCalendar size={size} color={color}/>
-                                        : (route.name == 'Setting') ?
-                                        <IconWrench size={size} color={color}/>
                                         : (route.name == 'Classes') ?
                                         <IconStudent size={size} color={color}/>
                                         : null

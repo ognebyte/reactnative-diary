@@ -57,11 +57,7 @@ const SubjectScreen = ({ route, navigation }) => {
         db.transaction(tx => {
             tx.executeSql(`SELECT * FROM ${table} WHERE subject_id = ? ORDER BY id DESC`, [subject_id],
                 (_, res) => {
-                    var rows = []
-                    for (let i = 0; i < res.rows.length; i++) {
-                        rows.push(res.rows.item(i))
-                    }
-                    setSubjectAssignment(rows)
+                    setSubjectAssignment(res.rows._array)
                 },
                 (_, error) => console.log(error)
             );
@@ -130,6 +126,7 @@ const SubjectScreen = ({ route, navigation }) => {
                 [title, description, grade, datetime, isComplete, itemId, subject_id],
                 (_, res) => {
                     if (res.rowsAffected > 0) {
+                        // Обновляем данные
                         var rows = [...subjectAssignment];
                         const indexToUpdate = rows.findIndex(item => item.id === itemId);
                         rows[indexToUpdate].title = title;

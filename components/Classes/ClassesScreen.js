@@ -44,11 +44,13 @@ const ClassesScreen = ({ route, navigation }) => {
     useEffect(() => {
         onAuthStateChanged(FIREBASE_AUTH, async user => {
             setLoading(true);
+            // Проверяет авторизовался ли пользователь
             if (user) {
                 const docSnap = await getDoc(doc(FIREBASE_DB, 'users', user.email));
                 const docData = docSnap.data()
 
                 var value = {email: user.email, firstname: docData.firstname, lastname: docData.lastname, birthday: docData.birthday};
+                // Сохраняем пользователя в хранилище устройства
                 await AsyncStorage.setItem('currentUser', JSON.stringify(value));
                 updateContextCurrentUser(value);
                 await getSubjects(value.email)
@@ -113,13 +115,13 @@ const ClassesScreen = ({ route, navigation }) => {
 
         const subjectIds = [];
         const subjectData = [];
-        let countPupil = 0;
 
         querySnapshot.forEach(doc => {
             subjectIds.push({id: doc.data().subjectId, role: doc.data().role});
         });
 
         await Promise.all(subjectIds.map(async (subjectId) => {
+            let countPupil = 0;
             const subjectDocSnap = await getDoc(doc(FIREBASE_DB, 'subjects', subjectId.id));
             const userDocSnap = await getDoc(doc(FIREBASE_DB, 'users', subjectDocSnap.data().createdBy));
 
@@ -165,6 +167,7 @@ const ClassesScreen = ({ route, navigation }) => {
                 }
             }
             setModalJoin(false)
+            setLoading(false)
         } catch (e) {
             setLoading(false)
             return alert(e);

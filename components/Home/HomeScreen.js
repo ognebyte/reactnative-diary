@@ -61,18 +61,18 @@ const HomeRoute = ({ navigation }) => {
     const loadTasks = () => {
         setLoadingTasks(true)
         db.transaction(tx =>
-                tx.executeSql(`SELECT
-                    assignments.id as assignments_id,
-                    assignments.title as assignments_title,
-                    assignments.description as assignments_description,
-                    assignments.grade as assignments_grade,
-                    assignments.isComplete as assignments_isComplete,
-                    assignments.createdAt as assignments_createdAt,
-                    assignments.deadline as assignments_deadline,
-                    subjects.id as subjects_id,
-                    subjects.title as subjects_title
-                    FROM assignments
-                    LEFT JOIN subjects ON subjects.id = assignments.subject_id`, [],
+            tx.executeSql(`SELECT
+                assignments.id as assignments_id,
+                assignments.title as assignments_title,
+                assignments.description as assignments_description,
+                assignments.grade as assignments_grade,
+                assignments.isComplete as assignments_isComplete,
+                assignments.createdAt as assignments_createdAt,
+                assignments.deadline as assignments_deadline,
+                subjects.id as subjects_id,
+                subjects.title as subjects_title
+                FROM assignments
+                LEFT JOIN subjects ON subjects.id = assignments.subject_id`, [],
                 (_, res) => {
                     const tasksArray = []
                     res.rows._array.map(item => {

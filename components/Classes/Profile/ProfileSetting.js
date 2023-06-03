@@ -50,12 +50,11 @@ const ProfileSetting = ({ navigation }) => {
     const logOut = async () => {
         setLoading(true)
         try {
+            // Удаляем данные из хранилище
             await AsyncStorage.removeItem('currentUser')
             await signOut(FIREBASE_AUTH);
             updateContextCurrentUser({})
-            setTimeout(() => {
-                navigation.goBack()
-            }, 500);
+            navigation.goBack()
         }
         catch (error) {
             alert(error)
