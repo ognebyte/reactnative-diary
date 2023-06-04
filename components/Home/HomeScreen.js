@@ -19,7 +19,7 @@ import Chevron from 'assets/svg/chevron';
 import Check from 'assets/svg/check';
 
 
-const HomeRoute = ({ navigation }) => {
+const HomeScreen = ({ navigation }) => {
     const db = SQLite.openDatabase('diary.db')
     const [tasks, setTasks] = useState([])
     const [notes, setNotes] = useState([])
@@ -426,4 +426,4 @@ const HomeRoute = ({ navigation }) => {
     );
 };
 
-export default HomeRoute;
+export default HomeScreen;

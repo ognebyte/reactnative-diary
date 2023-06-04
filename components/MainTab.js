@@ -18,7 +18,7 @@ const Tab = createBottomTabNavigator();
 
 const windowHeight = Dimensions.get('window').height;
 
-const App = () => {
+const MainTab = () => {
     const size = windowHeight / 100 * 5
     const activeTintColor = NavigationTheme.colors.activeColor
     const inactiveTintColor = NavigationTheme.colors.inactiveColor
@@ -95,4 +95,4 @@ const App = () => {
     );
 };
 
-export default App;
+export default MainTab;

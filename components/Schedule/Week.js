@@ -6,17 +6,11 @@ import { Text, View, TouchableOpacity, ScrollView, RefreshControl, TextInput, Di
 import { IconButton, TouchableRipple, Checkbox } from 'react-native-paper';
 
 import Colors from '../style/colors';
-import StylesNavigation from '../style/navigation';
 import StylesContainers from '../style/containers';
-import StylesButtons from '../style/buttons';
 import StylesTexts from '../style/texts';
 import Styles from './styles';
 
 import IconPlus from '../../assets/svg/plus';
-import Chevron from '../../assets/svg/chevron'
-import IconDelete from '../../assets/svg/delete';
-import IconDone from '../../assets/svg/done';
-import IconUndone from '../../assets/svg/undone';
 
 const Week = ({ route, navigate }) => {
     const db = SQLite.openDatabase('diary.db')

@@ -35,7 +35,6 @@ const CalendarScreen = () => {
     const tableSubjects = 'subjects'
 
     const [loading, setLoading] = useState(false)
-    const [modalAdd, setModalAdd] = useState(false);
     const [modalEdit, setModalEdit] = useState(false);
 
     const [selectedDay, setSelectedDay] = useState(moment().format('YYYY-MM-DD'));
@@ -266,14 +265,6 @@ const CalendarScreen = () => {
                     deadline={item.deadline}
                     descriptionShow={true} extraShow={true}
                     saveInputs={(t, d, g, dt, ic) => saveInputs(t, d, g, dt, ic)}
-                />
-            }
-
-            {/* Modal Add */}
-            {
-                !modalAdd ? null :
-                <ModalAdd show={() => setModalAdd(false)}
-                    addInputs={(t, d, g, dt) => addSubject(t, d, g, dt)}
                 />
             }
         </ScrollView>

@@ -6,7 +6,6 @@ import 'react-native-gesture-handler';
 import Swipeable from 'react-native-gesture-handler/Swipeable';
 
 import Colors from '../style/colors'
-import StylesContainers from '../style/containers'
 import StylesButtons from '../style/buttons'
 import StylesTexts from '../style/texts'
 import StylesSubject from './styles/subject'
