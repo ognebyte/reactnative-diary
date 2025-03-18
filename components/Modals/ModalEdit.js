@@ -73,7 +73,7 @@ const ModalEdit = (props) => {
                                         maxLength={50}
                                     />
                                 </View>
-                                { props.isComplete !== null ? null :
+                                { props.isComplete === null ? null :
                                     <Checkbox status={isComplete ? 'checked' : 'unchecked'}
                                         onPress={() => setIsComplete(!isComplete)}
                                     />

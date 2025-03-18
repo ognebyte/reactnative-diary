@@ -149,7 +149,7 @@ const SubjectsScreen = ({ navigation }) => {
             {
                 !modalEdit ? null :
                 <ModalEdit show={() => setModalEdit(false)}
-                    title={itemTitle}
+                    title={itemTitle} isComplete={null}
                     saveInputs={(t) => saveInputs(t)}
                 />
             }
